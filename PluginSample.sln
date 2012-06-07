@@ -1,0 +1,34 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interfaces", "Interfaces\Interfaces.csproj", "{6F8D6FCF-AB89-4BFE-ABA4-6463A4608294}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "activeWindow", "activeWindow\activeWindow.csproj", "{2C9DA839-586E-4AE3-97C8-4AF8AFC0A590}"
+	ProjectSection(ProjectDependencies) = postProject
+		{529967DB-C0D9-4444-B008-2A6FF3DFB461} = {529967DB-C0D9-4444-B008-2A6FF3DFB461}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Widgets", "pluginproject\Widgets.csproj", "{529967DB-C0D9-4444-B008-2A6FF3DFB461}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F8D6FCF-AB89-4BFE-ABA4-6463A4608294}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F8D6FCF-AB89-4BFE-ABA4-6463A4608294}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F8D6FCF-AB89-4BFE-ABA4-6463A4608294}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F8D6FCF-AB89-4BFE-ABA4-6463A4608294}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{2C9DA839-586E-4AE3-97C8-4AF8AFC0A590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C9DA839-586E-4AE3-97C8-4AF8AFC0A590}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C9DA839-586E-4AE3-97C8-4AF8AFC0A590}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C9DA839-586E-4AE3-97C8-4AF8AFC0A590}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{529967DB-C0D9-4444-B008-2A6FF3DFB461}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{529967DB-C0D9-4444-B008-2A6FF3DFB461}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{529967DB-C0D9-4444-B008-2A6FF3DFB461}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{529967DB-C0D9-4444-B008-2A6FF3DFB461}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

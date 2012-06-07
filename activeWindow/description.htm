@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<p><font size="2"><b><font size="3"><u>Get current Window Handle and Caption with 
+  Windows API in C# </u></font></b></font></p>
+<p><font size="2">By <a href="mailto:leopardkhan@hotmail.com">Waheed Khan</a></font></p>
+<p><font size="2">Level: Beginners</font></p>
+<p><font size="2">In this article I will show you how to use Windows API function 
+  GetForegroundWindow, and GetWindowText. </font></p>
+<p><font size="2"><u>GetForegroundWindow : </u></font></p>
+<p><font size="2">The GetForegroundWindow function returns a handle to the window 
+  with which the user is currently working. </font></p>
+<p><font size="2"><u>GetWindowText: </u></font></p>
+<p><font size="2">The GetWindowText function copies the text of the specified 
+  window's title bar (if it has one) into a buffer. </font></p>
+<p><font size="2">For more information's MSDN is the great place for Windows API 
+  functions. </font></p>
+<p>&nbsp;</p>
+<p><font size="2">Start a new project, add labels, button and timer. Make sure 
+  set the timer Enable property to true. </font></p>
+<p>&nbsp;</p>
+<p><font size="2">Include these lines at the top</font></p>
+<p><font size="2">using System.Runtime.InteropServices; </font></p>
+<p><font size="2">using System.Text;</font></p>
+<p>&nbsp;</p>
+<p><font size="2">Add following lines to declare API functions, to get the Windows 
+  API functions we will have to import &quot;user32.dll&quot; Dlls. </font></p>
+<p><font size="2">[ DllImport("user32.dll") ] </font></p>
+<p><font size="2">static extern int GetForegroundWindow(); </font></p>
+<p><font size="2">[ DllImport("user32.dll") ] </font>
+<p><font size="2">static extern int GetWindowText(int hWnd, StringBuilder text, 
+  int count); </font>
+<p>&nbsp;</p>
+<p><font size="2">Then, write the code for the function </font></p>
+<pre><font size="2">
+private void GetActiveWindow()
+{
+			
+	const int nChars = 256;
+	int handle = 0;
+	StringBuilder Buff = new StringBuilder(nChars);
+   			
+	handle = GetForegroundWindow();
+
+	if ( GetWindowText(handle, Buff, nChars) > 0 )
+	{
+		this.captionWindowLabel.Text = Buff.ToString();
+		this.IDWindowLabel.Text = handle.ToString();
+	}
+
+}
+</font></pre>
+<p><font size="2">and call GetActiveWindow function within timer function</font></p>
+<pre><font size="2">
+private void timer1_Tick(object sender, System.EventArgs e)
+{
+	GetActiveWindow();
+}
+
+</font></pre>
+<p><font size="2"> That's all.<br>
+  </font></p>
+<p><font size="2">After running the application, open a notepad, click on it, 
+  and you will get the window caption and handle.</font></p>
+<p><font size="2">Keep Coding !!!<br>
+  </font></p>
+<p><font size="2"><br>
+  <u>Download the source code.</u></font></p>
+<p><a href='activeWindow.zip'>source - 12 kb </a></p>
+<p>&nbsp;</p>
+<pre><font size="2">
+
+
+</font></pre>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>
