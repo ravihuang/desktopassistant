@@ -445,6 +445,7 @@ namespace activeWindow
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TCAssistant";
+            this.TopMost = true;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TCAssistant_FormClosed);
             this.tabControl1.ResumeLayout(false);
             this.tabPageScript.ResumeLayout(false);
