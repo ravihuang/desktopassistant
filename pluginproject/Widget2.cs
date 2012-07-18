@@ -75,7 +75,7 @@ namespace Widgets.SecondSet
         public override string ToScript()
         {
             //处理测试用例中的"步骤"字段
-            string step = cells[(int)colName.STEP];
+            /*string step = cells[(int)colName.STEP];
             string[] steps = step.Split(new char[1]{'\n'});            
             ArrayList arrStep = new ArrayList();
             for (int i = 0; i < steps.Length; i++) {
@@ -109,7 +109,9 @@ namespace Widgets.SecondSet
                 arrResult.Add(s.Substring(p+1).Trim());
                
             }
-            arrResult.TrimToSize();
+            arrResult.TrimToSize();*/
+            ArrayList arrStep =this.getSteps();
+            ArrayList arrResult = this.getExpRsts();
             //确认步骤和结果长度匹配
             if (arrResult.Count != arrStep.Count)
             {

@@ -21,7 +21,7 @@ namespace activeWindow
         protected Excel.Worksheet sheet;
         protected ILog logger;
         
-        protected enum colName { 
+        public enum colName { 
             FEATUREID=1,//索引	
             FEATURE_DESC,//描述	
             CASE_DESC,//设计描述	
@@ -96,9 +96,9 @@ namespace activeWindow
                     break;
             }
             if(testcases.Count==0)
-                logger.AppendLine("Warn:没有生成可用的数据，Row" + row);
+                logger.AppendLine("Warn:没有生成用例，Row" + row);
         }
-
+        
         public bool InitialTestcase(Worksheet sheet, int row)
         {
             if (row <= 2) {
@@ -114,24 +114,26 @@ namespace activeWindow
                 else
                     cells[i]=(string)values.GetValue(1, i).ToString().Trim();
             }
-            if (cells[(int)colName.STEP] != "" && cells[(int)colName.EXP_RESULT] != "")
-            {                
-                walkSubItemTestCase(sheet, row);
+
+            if (cells[(int)colName.STEP]!=""&&cells[(int)colName.EXP_RESULT]!="")
+            {          
+                //walkSubItemTestCase(sheet, row);
                 return true;
             }
             return false;
         }
-        public Boolean insertPairwiseCase(Worksheet sheet, int row)
+        
+        public Boolean insertCases(Worksheet sheet, int row,int deep)
         {
-            Range range = sheet.get_Range("A" + row, "Z" + row);
- 
+            Range range = sheet.Range["A"+row,Type.Missing].EntireRow;
+            
             Array values = (System.Array)range.Cells.Value2;
             string paras = values.GetValue(1, (int)colName.CASE_VAR).ToString();
             string id = values.GetValue(1, (int)colName.FEATUREID).ToString();
 
             string[] arr = paras.Trim().Split(new string[] { "\n" }, StringSplitOptions.None);
             //p2=[eva,tang]
-            List<activeWindow.PairVaraible> pvlist = new List<PairVaraible>();
+            List<activeWindow.PairVaraible> pvlist = new List<PairVaraible>();            
             for (int i = 0; i < arr.Length; i++)
             {
                 PairVaraible pv = new PairVaraible();
@@ -159,12 +161,17 @@ namespace activeWindow
                 pv.values.Add(t[t.Length-1].Trim().Substring(0,t[t.Length-1].Length-1));
                 pvlist.Add(pv);                
             }
+            //logger.Append("Gen-ed！\n");
 
-            ArrayList ll = Pairwise.go(pvlist, Math.Min(2,pvlist.Count));
+            ArrayList ll = Pairwise.go(pvlist, Math.Min(deep, pvlist.Count));
             ll.TrimToSize();
-            Range tmprange = sheet.get_Range("A" + (row + 1), "Z" + (row + 1));
-            for (int i = 0; i < ll.Count;i++ )
+            //Range tmprange = sheet.get_Range("A" + (row + 1), "Z" + (row + 1));
+            Range tmprange = sheet.Range["A" + (row + 1), Type.Missing].EntireRow;
+            for (int i = 0; i < ll.Count; i++)
+            {
                 tmprange.Insert(Excel.XlInsertShiftDirection.xlShiftDown, Type.Missing);
+               // logger.Append("insert one！\n");
+            }
 
             for (int i = 0; i < ll.Count; i++)
             {
@@ -175,10 +182,10 @@ namespace activeWindow
                 }
                 sheet.Cells[row + i + 1, (int)colName.CASE_VAR] = tcDesc.Trim();
                 sheet.Cells[row + i + 1, (int)colName.FEATURE_DESC] = id+"_"+i;
+                //logger.Append("set one！\n");
             }
 
-            sheet.get_Range("A" + row, "A" + (row + ll.Count)).RowHeight =21;
-            
+            sheet.get_Range("A" + row, "A" + (row + ll.Count)).RowHeight =21;            
              
             logger.Append("");
 
@@ -188,7 +195,55 @@ namespace activeWindow
         {
             this.logger = log;
         }
+        public ArrayList getExpRsts()
+        {
+            //处理测试用例中的"预期结果"字段
+            string result = cells[(int)colName.EXP_RESULT];
+            string[] results = result.Split(new char[1] { '\n' });
+            ArrayList arrResult = new ArrayList();
+            for (int i = 0; i < results.Length; i++)
+            {
+                string s = results[i].Trim();
+                if (s.Length == 0)
+                    continue;
+                
+                int cnt = Math.Min(s.Length, 4);
 
+                int p = s.IndexOfAny(new char[3] { ',', '，', ' ' }, 0, cnt);
+                if (p == -1||s.Length<4)
+                {
+                    logger.AppendLine("Warning:预期结果格式非法" + cells[(int)colName.FEATUREID] + "：" + s);
+                    p = 0;
+                }
+                arrResult.Add(s.Substring(p + 1).Trim());
+
+            }
+            arrResult.TrimToSize();
+            return arrResult;
+        }
+        public ArrayList getSteps() {
+            //处理测试用例中的"步骤"字段
+            string step = cells[(int)colName.STEP];
+            string[] steps = step.Split(new char[1] { '\n' });
+            ArrayList arrStep = new ArrayList();
+            for (int i = 0; i < steps.Length; i++)
+            {
+                string s = steps[i].Trim();
+                if (s.Length == 0)
+                    continue;
+                int cnt = Math.Min(s.Length, 4);
+                int p = s.IndexOfAny(new char[3] { ',', '，', ' ' }, 0, cnt);
+                if (p == -1 || s.Length < 4)
+                {
+                    logger.AppendLine("Warning:step格式非法" + cells[(int)colName.FEATUREID] + "：" + s);
+                    p = 0;
+                }
+                arrStep.Add(s.Substring(p + 1).Trim());
+            }
+            arrStep.TrimToSize();
+            return arrStep;
+            
+        }
         public abstract string ToScript();
         public virtual string GetScriptName()
         {

@@ -8,8 +8,8 @@ namespace activeWindow
     public interface ITestcase
     {
         Boolean CanAuto();
-        Boolean InitialTestcase(Excel.Worksheet sheet,int row);        
-        Boolean insertPairwiseCase(Excel.Worksheet sheet, int row);
+        Boolean InitialTestcase(Excel.Worksheet sheet,int row);
+        Boolean insertCases(Excel.Worksheet sheet, int row, int deep);
         String GetScriptName();
         String ToScript();
         String Optimize();

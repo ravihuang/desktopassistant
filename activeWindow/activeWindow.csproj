@@ -132,10 +132,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Application.cs" />
+    <Compile Include="autoDockWindow.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="IPOM.cs" />
     <Compile Include="plugin.cs" />
     <Compile Include="RegExp.cs" />
     <Compile Include="RunShellScript.cs" />
+    <Compile Include="STAF.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="TCAssistant.cs">
       <SubType>Form</SubType>
     </Compile>

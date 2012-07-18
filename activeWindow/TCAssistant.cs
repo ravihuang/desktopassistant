@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Configuration;
 using Excel;
+using System.Collections;
 namespace activeWindow
 {
     public partial class TCAssistant : Form,ILog
@@ -17,22 +18,22 @@ namespace activeWindow
         Excel.Application app;
         bool showHelp = false;
         Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-        bool treeInitiated = false;
-
+        
         public TCAssistant()
         {
          //   File.Delete("temp.txt");
             InitializeComponent();
             textBox1.Text = ConfigurationManager.AppSettings["save_path"];
             showHelp = ConfigurationManager.AppSettings["show_help"] == "true";
-
+            this.cbDeep.SelectedIndex = 1;
+            this.cbOs.SelectedIndex = 0;
             initTestcaseBox();
 
             foreach (string tc in PluginBroker.List(typeof(ITestcase)))
             {
-                this.comboBox1.Items.Add(PluginBroker.Load(tc, typeof(ITestcase)));
+                this.cbScriptType.Items.Add(PluginBroker.Load(tc, typeof(ITestcase)));
             }
-            this.comboBox1.SelectedIndex = 0;
+            this.cbScriptType.SelectedIndex = 0;
         }
         
         public void saveConfig(String key,String value) {
@@ -85,8 +86,7 @@ namespace activeWindow
 
             if (app.ActiveWorkbook == null)
             {
-                MessageBox.Show("请打开用例文档先！");
-                return false;
+               return false;
             }
 
             tbTestcase.Text = app.ActiveWorkbook.Name;
@@ -106,8 +106,8 @@ namespace activeWindow
             Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;            
 
             Excel.Range selection = app.Application.Selection as Excel.Range;
-            
-            ITestcase itc = (ITestcase)this.comboBox1.SelectedItem;
+
+            DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
             int cnt = 0;
             for (int i = 0; i < selection.Count; i++)
             {
@@ -152,7 +152,7 @@ namespace activeWindow
                      }                
                 }
                 UTF8Encoding utf8 = new UTF8Encoding(false,false);
-
+                itc.walkSubItemTestCase(sheet, selection.Row);
                 StreamWriter w = new StreamWriter(fi.Create(), Encoding.GetEncoding("GBK"));
                 w.WriteLine(itc.ToScript());
                 w.Flush();
@@ -207,7 +207,7 @@ namespace activeWindow
                 toolTip1.Show(tbTestcase.Text, (IWin32Window)sender);
         }
 
-        private void bSave_Click(object sender, EventArgs e)
+        private void bSelect_Click(object sender, EventArgs e)
         {
             folderBrowserDialog1.SelectedPath = @textBox1.Text;
             if (folderBrowserDialog1.ShowDialog() != DialogResult.OK)
@@ -221,32 +221,32 @@ namespace activeWindow
         {
             toolTip1.RemoveAll();
         }
-
+        private bool isloaded = false;
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
-            if (((TabControl)sender).SelectedTab.Text == "用例助手")
-            {
-                this.MinimumSize = SystemInformation.PrimaryMonitorSize;
-                this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-                this.Location = new System.Drawing.Point(0, 0);
-                this.TopMost = false;
+            //this.Location = new System.Drawing.Point((SystemInformation.PrimaryMonitorSize.Width - 550) / 2,
+            //        (SystemInformation.PrimaryMonitorSize.Height - 400) / 2);
+            //this.MinimumSize = SystemInformation.PrimaryMonitorSize;
+            //this.StartPosition = System.Windows.Forms.FormStartPosition;
+            //this.MaximumSize = new System.Drawing.Size(550, 400);
 
-            }
-            else
-            {
+            if (((TabControl)sender).SelectedTab.Text == "脚本助手")
                 this.TopMost = true;
-                this.MaximumSize = new System.Drawing.Size(550, 400);
-                this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-                this.Location = new System.Drawing.Point((SystemInformation.PrimaryMonitorSize.Width-550) / 2, 
-                    (SystemInformation.PrimaryMonitorSize.Height-400) / 2);
-            }
-            
-        }
+            else
+                this.TopMost = false;
+            if (((TabControl)sender).SelectedTab.Text == "STAF" && !isloaded)
+            {                
+                isloaded = true;
+                if (Directory.Exists("C:\\STAF"))
+                {
+                    Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + ";C:\\STAF\\bin");
+                }
 
-        void initTree() {
-            treeInitiated = true;
-        
-        }
+                loadItemsToListBox("cfg\\HostList.txt", lstHostList);
+                txtCommand.Text = readText("cfg\\Command.txt");
+                txtCheckCondition.Text = readText("cfg\\CheckCondition.txt");
+            }
+        }        
 
         private void bGenTestcase_Click(object sender, EventArgs e)
         {
@@ -262,14 +262,14 @@ namespace activeWindow
             
             Excel.Range selection = app.Application.Selection as Excel.Range;
 
-            ITestcase itc = (ITestcase)this.comboBox1.SelectedItem;
+            DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
 
             if (selection.Count != 1||!itc.InitialTestcase(sheet, selection.Row)) {
                 this.AppendLine("请选择1行用例，并且测试步骤字段不能为空");
                 bGenTestcase.Enabled = true;
                 return;
-            }
-            itc.insertPairwiseCase(sheet, selection.Row);
+            }            
+            itc.insertCases(sheet, selection.Row, int.Parse(cbDeep.Items[cbDeep.SelectedIndex].ToString()));
 
             bGenTestcase.Enabled = true;
                
@@ -302,7 +302,7 @@ namespace activeWindow
             range.Rows.Group(Type.Missing, Type.Missing, Type.Missing, Type.Missing);
             
         }
-        private void bTestcaseGroup_Click(object sender, EventArgs e)
+        private void bGroup_Click(object sender, EventArgs e)
         {           
 
             if (!initTestcaseBox())            
@@ -397,11 +397,11 @@ namespace activeWindow
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ITestcase itc = (ITestcase)this.comboBox1.SelectedItem;
+            ITestcase itc = (ITestcase)this.cbScriptType.SelectedItem;
             itc.setLogger(this);
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void bClrGrp_Click(object sender, EventArgs e)
         {      
 
             if (!initTestcaseBox())
@@ -423,6 +423,144 @@ namespace activeWindow
                
 
             }
+        }
+
+        private void bDelSubTC_Click(object sender, EventArgs e)
+        {
+            if (!initTestcaseBox())
+            {
+                return;
+            }
+            DialogResult rst = MessageBox.Show(
+                                      "删除后不可恢复，是否继续？",
+                                      "注意！",
+                                      MessageBoxButtons.YesNo,
+                                      MessageBoxIcon.Asterisk);
+            if (DialogResult.No == rst)
+            {
+                return;
+            }
+
+            Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
+            try
+            {
+                int rows = sheet.UsedRange.Rows.Count;
+                for (int i = rows; i > 1; i--) {
+                    Range tmprange = sheet.Range["A" +i, Type.Missing].EntireRow;
+                    Array values = (Array)tmprange.Cells.Value2;
+
+                    Object c1 = values.GetValue(1, 1);
+                    Object c2 = values.GetValue(1, 2);
+                    if (c1 == null && c2 == null)
+                        continue;
+                    if (c1 == null)
+                        tmprange.Delete(Excel.XlDeleteShiftDirection.xlShiftUp);
+                }                
+            }
+            catch (Exception ex)
+            {
+                this.AppendLine(ex.StackTrace);
+            }
+        }
+
+        private void bCheckStyle_Click(object sender, EventArgs e)
+        {
+            if (!initTestcaseBox())
+            {
+                return;
+            }
+            
+            Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
+            try
+            {
+                int rows = sheet.UsedRange.Rows.Count;
+                int curr_flag = 0;
+                for (int i = 3; i <rows; i++)
+                {
+                    Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
+                    Array values = (Array)tmprange.Cells.Value2;
+                    Object c1 = values.GetValue(1, 1);
+                    Object c2 = values.GetValue(1, 2);
+                    if (c1 == null && c2 == null)
+                    {
+                        this.AppendLine("Warning:空白行,row" + i);
+                        continue;
+                    }
+                    if (c1 == null)
+                        continue;
+
+                    int flag = c1.ToString().Split(new string[] { "_" }, StringSplitOptions.None).Length;
+
+                    if (flag > 5) {
+                        this.AppendLine("Warning:层级大过5,row" + i);
+                        continue;
+                    }
+
+                    if (curr_flag == 0)
+                    {
+                        curr_flag = flag;
+                        continue;
+                    }
+                    
+                    if ((flag - curr_flag) > 1)
+                    {
+                        this.AppendLine("Warning:缺少中间模块,row"+ i);                        
+                    }
+                    curr_flag = flag;
+
+                    if (flag == 5) 
+                    {
+                        DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
+                        if (!itc.InitialTestcase(sheet, i))
+                        {
+                            this.AppendLine("Warning:步骤和预期结果不能为空 row" + i);
+                            continue;
+                        }
+                        if(itc.getSteps().Count!=itc.getExpRsts().Count)
+                        {
+                            this.AppendLine("Warning:步骤和预期结果长度不一致 row" + i);
+                            continue;
+                        }
+                    }                    
+                }
+            }
+            catch (Exception ex)
+            {
+                this.AppendLine(ex.StackTrace);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (!initTestcaseBox())
+            {
+                return;
+            }
+
+            Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
+
+            Excel.Range selection = app.Application.Selection as Excel.Range;
+            DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
+
+            if (selection.Count != 1 || !itc.InitialTestcase(sheet, selection.Row))
+            {
+                this.AppendLine("请选择1行用例，并且测试步骤字段不能为空");
+                return;
+            }
+            int row = selection.Row;
+            ArrayList tmp = itc.getSteps();
+            string s="";
+            for (int i = 0; i < tmp.Count; i++)
+                s += (i+1)+","+tmp[i] + "\n";
+            sheet.Cells[row, (int)DefaultTC.colName.STEP] = s.Trim();
+
+            tmp = itc.getExpRsts();
+            s = "";
+            for (int i = 0; i < tmp.Count; i++)
+                s += (i + 1) + "," + tmp[i] + "\n";
+
+            sheet.Cells[row, (int)DefaultTC.colName.EXP_RESULT] = s.Trim();
+
         }
 
     }    

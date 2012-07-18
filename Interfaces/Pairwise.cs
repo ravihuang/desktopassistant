@@ -46,8 +46,11 @@ namespace activeWindow
             {
                 return null;
             }
+
             if (al.Count == 1) {
-                return (ArrayList)al[0];
+                if (al[0] is ArrayList)
+                    return (ArrayList)al[0];
+                return al;
             }
             ArrayList arl = new ArrayList();
             int m = al.Count % 2;
@@ -64,24 +67,45 @@ namespace activeWindow
         private static ArrayList appendList(ArrayList v1, ArrayList v2)
         {
             ArrayList arr = new ArrayList();
-            for (int i = 0; i < v1.Count; i++)
+            ArrayList max,min;
+            if (v2 != null && v2.Count > v1.Count)
+            {
+                max = v2;
+                min = v1;
+            }
+            else 
+            {
+                max = v1;
+                min = v2;
+            }
+            for (int i = 0; i < max.Count; i++)
             {
                 ArrayList temp;
-                if (v1[i] is ArrayList)
+                if (max[i] is ArrayList)
                 {
-                    temp = (ArrayList)v1[i];
+                    temp = (ArrayList)max[i];
                 }
                 else
                 {
                     temp = new ArrayList();
-                    temp.Add(v1[i]);
+                    temp.Add(max[i]);
                 }
-                if (v2 != null && v2.Count > 0)
+                if (min != null && min.Count > 0)
                 {
-                    if (v2[i % v2.Count] is ArrayList)
-                        temp.AddRange((ArrayList)v2[i % v2.Count]);
+                    if (min[i % min.Count] is ArrayList)
+                    {
+                        if (v2.Count > v1.Count)
+                            temp.InsertRange(0, (ArrayList)min[i % min.Count]);
+                        else 
+                            temp.AddRange((ArrayList)min[i % min.Count]);
+                    }
                     else
-                        temp.Add(v2[i % v2.Count]);
+                    {
+                        if (v2.Count > v1.Count)
+                            temp.Insert(0, min[i % min.Count]);
+                        else
+                            temp.Add(min[i % min.Count]);
+                    }
                 }
                 arr.Add(temp);
             }
