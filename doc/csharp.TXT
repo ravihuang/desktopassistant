@@ -1,0 +1,371 @@
+public static void GoToLine(RichTextBox rtb, int rownumber)
+{
+  //在vs 2003 下可以通过以下代码实现
+  int i = 1;
+  int b = 0;
+  foreach(string s in rtb.Lines) //不要改为for语句
+  {
+    if(i<rownumber) b += s.Length+1; else break;
+    i++;
+  }
+  rtb.SelectionStart = b -1;
+  rtb.SelectionLength = 0;
+  rtb.Focus();
+  rtb.ScrollToCaret();
+  */
+
+  //在vs 2005 下由于RichTextBox有成员GetFirstCharIndexFromLine，就方便多了。通过以下代码实现
+  rtb.SelectionStart = rtb.GetFirstCharIndexFromLine(rownumber-1) - 1;
+  rtb.SelectionLength = 0;
+  rtb.Focus();
+  rtb.ScrollToCaret();
+  
+}
+
+private void MenuItem204_Click(object sender, EventArgs e)
+{
+if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Text) == true)
+{
+RichTextBox1.Paste();
+}
+}
+
+C#中两个RichTextBox同步滚动的实现
+阅读(25) 评论(0) 发表时间：2008年09月16日 17:45 
+本文地址：http://qzone.qq.com/blog/31859384-1221558316 
+
+本文标签: 联动 滚动 常量 同步 C#
+ 
+ 
+最近想做一个比较两段文本的东西，将文本放入RichTextBox，想拖动其中一个的滚动条，然后另外一个也就可以滚动的效果。
+遵循我的一贯原则，先从RichTextBox本身的特性上找，从滚动事件上看，事件处理参数中居然没有滚动位置参数，RichTextBox也没有当前行的说法；下一步从属性上找，没有合适的；下一步找方法，找到一个有点象的：ScrollToCaret（），MSDN的说法是：将控件的内容滚动到当前插入符号位置，可是我根本就没有当前插入符号的位置，也没法得到这一点；最后找受保护的方法，还好有一个WndProc，这个方法的解释为：“处理 Windows 消息”，天哪，这回掉到大坑中了，整个windows体系就是消息来消息去的，这回我们可要从中间拦截一道了。
+先找到滚动消息的消息类型编号，懒一点，自己做个类，继承自RichTextBox，重写WndProc方法，只不过多写一句话而已，Console.WriteLine(e.ToString())，当然了，这个类要在测试工程中用一下，避免太多的消息干扰，在界面上做一个按钮一个普通TextBox，按钮的功能为将TextBox中的内容添加到自定义的RichTextBox中，每个动作都会激发WndProc方法，从一大堆的结果中找到自己关心的内容。
+以下为自定义RichTextBox
+    public class MyRichTextBox:RichTextBox
+    {
+        protected override void WndProc(ref Message m)
+        {
+            Console.WriteLine(m.ToString());
+            base.WndProc(ref m);
+        }
+    }
+以下为测试代码：
+        MyRichTextBox rtb = new MyRichTextBox();
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+            this.Controls.Add(rtb);
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.rtb.Text = this.textBox1.Text;
+        }
+    测试后的打印的内容：
+msg=0x115 (WM_VSCROLL) hwnd=0x10b34 wparam=0x1 lparam=0x0 result=0x0
+msg=0x204e (WM_REFLECT + WM_NOTIFY) hwnd=0x10b34 wparam=0x10b34 lparam=0x517bf48 result=0x0
+msg=0x2111 (WM_REFLECT + WM_COMMAND) hwnd=0x10b34 wparam=0x6020b34 lparam=0x10b34 result=0x0
+msg=0xf (WM_PAINT) hwnd=0x10b34 wparam=0x0 lparam=0x0 result=0x0
+msg=0x2111 (WM_REFLECT + WM_COMMAND) hwnd=0x10b34 wparam=0x4000b34 lparam=0x10b34 result=0x0
+msg=0xb8 hwnd=0x10b34 wparam=0x0 lparam=0x0 result=0x0
+msg=0x215 (WM_CAPTURECHANGED) hwnd=0x10b34 wparam=0x0 lparam=0x0 result=0x0
+msg=0x115 (WM_VSCROLL) hwnd=0x10b34 wparam=0x8 lparam=0x0 result=0x0
+msg=0x204e (WM_REFLECT + WM_NOTIFY) hwnd=0x10b34 wparam=0x10b34 lparam=0x517bf48 result=0x0
+msg=0x84 (WM_NCHITTEST) hwnd=0x10b34 wparam=0x0 lparam=0xc600b7 result=0x0
+msg=0x84 (WM_NCHITTEST) hwnd=0x10b34 wparam=0x0 lparam=0xc600b7 result=0x0
+msg=0x20 (WM_SETCURSOR) hwnd=0x10b34 wparam=0x10b34 lparam=0x2000007 result=0x0
+msg=0xa0 (WM_NCMOUSEMOVE) hwnd=0x10b34 wparam=0x7 lparam=0xc600b7 result=0x0
+msg=0x84 (WM_NCHITTEST) hwnd=0x10b34 wparam=0x0 lparam=0xc600b8 result=0x0
+msg=0x84 (WM_NCHITTEST) hwnd=0x10b34 wparam=0x0 lparam=0xc600b8 result=0x0
+
+    从一大堆结果中找自己感兴趣的，啊哈，有了，
+msg=0x115 (WM_VSCROLL) hwnd=0x10b34 wparam=0x8 lparam=0x0 result=0x0
+这就是我想要的内容，大力水手与你猜猜猜开始了，
+    什么是msg=0x115，每行的msg都不一样，当然了windows消息不一样，那么msg就不一样。
+    那么hwnd是什么？windows程序接触多了，是个傻子也知道这是句柄，也可以认为是指针，谁的指针，当然是你操作的对象的指针，那么是不是用这个家伙就可以代表着那个对象，啊哈，答对了。
+    wparam呢？lparam呢？不好猜了吧，我也不知道，w和l不知道并不意味这咱们啥都不知道，param这知道，参数嘛。
+    下面我们来解决这个问题：
+    从面向对象的角度上看，如果我们将对象的地址或指针换了，那么他所操作的应该是其他的对象。
+   着手的地方应该是WndProc方法，这个方法有一个强制引用参数Message，既然是强制引用，那么这小子很有可能是个值类型的玩意，但对我们没什么影响。我们的目标是RichText1滚到哪里，RichTextBox2也滚到哪里，这样，我们就只换我们操作的对象就可以了。
+    现在要考虑的是将Message怎么传递给另外的RichTextBox，并且能够实现功能。在windows体系本身来说用的就是事件消息机制，那我们为什么不能再画一个瓢呢？啊哈，.Net本身就有一个委托机制。
+    先做一个委托吧。
+    public delegate void SendMessage(Message msg);
+    下来在MyRichTextBox中做一个事件SendMessageEvent。
+    public event SendMessage SendMessageEvent;
+    当WndProc执行的时候激发这个事件。
+        public event SendMessage SendMessageEvent;
+        protected override void WndProc(ref Message m)
+        {
+            SendMessageEvent(m);
+            base.WndProc(ref m);
+        }
+    但是这个消息要能让另一个RichTextBox滚动也需要执行WndProc，但是WndProc为受保护方法，没法子，只好做了一个公开的方法，
+        public void Scroll(Message m)
+        {
+            m.HWnd = this.Handle;
+            WndProc(ref m);
+        }
+    在使用的时候，用以下方式：
+        MyRichTextBox c1 = new MyRichTextBox();
+        MyRichTextBox c2 = new MyRichTextBox();
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            c1.SendMessageEvent += new SendMessage(c1_SendMessageEvent);
+            this.Controls.Add(c1);
+            this.Controls.Add(c2);
+        }
+        void c1_SendMessageEvent(Message msg)
+        {
+            c2.Scroll(msg);
+        }
+    c1为源RichTextBox，c2为被动RichTextBox，c1滚动，c2也跟着滚动。
+    其实大家看到这儿，怎么回事，c2的滚动还是要调用c2的Scroll方法，这算那门子事啊，大力水手曰：世道艰难，求人不如求己，但是c2的发财，是由于c1的消息，所以大力水手曰：信息是第一生产力。
+    是否就此天下太平了？四海欢腾了？九州高歌了？
+    回顾我们的目标，我们要两个RichTextBox同步滚动，的确实现了，但是如果去掉：c1.SendMessageEvent += new SendMessage(c1_SendMessageEvent);将会引发NullReferenceException？
+    原因是这个事件没有被一个合适的方法所订阅，你就想调用这个方法，解决之道也简单，加一个简单的判空即可：
+                    if (SendMessageEvent!=null)
+                {
+                    SendMessageEvent(m);
+                }
+    够了吗，够了，天下太平了？四海欢腾了？九州高歌了？
+    没有，这回是多了，怎么回事？无论在c1上做什么操作，在c2上就有什么结果，我只想要同步滚动而已，太多了，应该只拦截那些滚动的方法。
+            if (m.Msg==0x115)
+            {
+                if (SendMessageEvent!=null)
+                {
+                    SendMessageEvent(m);
+                }
+            }
+            base.WndProc(ref m);
+    0x115为滚动，但是...，但是...，嗯，总有点不太对劲的地方，做一下全面测试，啊，找到了，刚才看到Scroll就以为找到了滚动，将谁忽略了？！哪有啊，肯定有！哦，明白了那个字母“V”，我以为那是一个修饰符而已，看来还是很有用处的，什么用处啊？到底是啥啊，你想急死我啊，嘿，还就是，谁让你不好好学习了。那是vertical，垂直啊，我说嘛，加上了这个横向滚动咋就不行了，看来还得再来一个咯，还得把横向滚动的消息放过，那么找吧，又找到了一个HScroll就是它了。
+    再改改if (m.Msg==0x115 || m.Msg==0x114)。
+    还不太美，毕竟不能太违反八荣八耻：将0x114，0x115改为两个常数。
+    private const int WM_HSCROLL = 0x0114;
+    private const int WM_VSCROLL = 0x0115;
+    天下太平了？四海欢腾了？九州高歌了？
+    因为这两个常量是同一类型，处于同一个地位，因而，最好将他们做为一个常量组，.Net体系中有常量组吗？有啊，改名了，叫枚举。
+    public enum WindowsMessage
+    {
+        WM_HSCROLL = 0x0114,
+        WM_VSCROLL = 0x0115
+    }
+    因而final version应该是：
+    public enum WindowsMessage
+    {
+        WM_HSCROLL = 0x0114,
+        WM_VSCROLL = 0x0115
+    }
+    public delegate void SendMessage(Message msg);
+    public class MyRichTextBox:System.Windows.Forms.RichTextBox
+    {
+        public event SendMessage SendMessageEvent;
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg==WindowsMessage.WM_HSCROLL || m.Msg==WindowsMessage.WM_VSCROLL)
+            {
+                if (SendMessageEvent!=null)
+                {
+                    SendMessageEvent(m);
+                }
+            }
+            base.WndProc(ref m);
+        }
+        public void Scroll(Message m)
+        {
+            m.HWnd = this.Handle;
+            WndProc(ref m);
+        }
+    }
+    这样就功德圆满了，收工。
+ 
+使用RichTextBox的一点心得
+最近开发一个控件，主要是对RichTextBox进行操作，实现对文本的编辑，包括加粗，下划线，改变字号，改变颜色等。最主要的是在光标位置插入带背景颜色的标签。 
+         我的实现方式如下： 
+1． 新建一个控件类，让他继承RichTextBox类。 
+2． 文本的编辑 
+主要使用RichTextBox的Select、SelectionColor、SelectionFont来实现。其中文本颜色是调用ColorDialog组建来实现。 
+3．带背景颜色的标签。 
+插入这个标签，开始我还真没有想到好的解决方法，最后想起了RichTextBox是支持Rtf规范的。利用Rtf规范将文本格式化成一个string，然后将这个string付给RichTextBox的SelectedRtf属性，之后就算是好了。 
+Rtf有个关键之处：当你改变了一段文本后，在这段文本后面接着输入文字，后续的文字和前面的文字的格式是一样的。但是在我们的大多数应用中我们要求后面的文字是默认的格式，也就是黑字白底。在没有办法的时候我在我的标签后面加了一个用Rtf格式化的一个默认的空格。 
+我的代码如下： 
+
+  private string textColor = @"\red0\green0\blue0;";//文字颜色-->黑 
+        private string BgWhite = @"\red255\green255\blue255;";//背景颜色-->白 
+        private string BgGray = @"\red180\green180\blue180;";//背景颜色-->灰 
+        
+        //插入文字 
+        private string getTagRtf(string text, string textColor, string textBgColor) 
+        { 
+            StringBuilder rtfText = new StringBuilder(); 
+            rtfText.Append(@"{\rtf1\ansi\ansicpg936\deff0\deflang1033\deflangfe2052");//rtf头 
+            rtfText.Append(@"{\fonttbl{\f0\fnil\fcharset134\''cb\''ce\''cc\''e5;}}");//字体 
+            rtfText.Append(@"{\colortbl;");//定义颜色 
+            rtfText.Append(textColor);//文字颜色 
+            rtfText.Append(textBgColor);//文字背景颜色 
+            rtfText.Append(@"}"); 
+            rtfText.Append(@"{\*\generator Msftedit 5.41.21.2500;}\viewkind4\uc1\pard\highlight2\b\lang2052\f0\fs18");//文本体 
+            rtfText.Append(text);//要显示的文本。 
+            rtfText.Append(@"}");//rtf结尾//\par 
+            string rtfcode = rtfText.ToString(); 
+            return rtfcode; 
+        } 
+
+        //插入空格 
+        private string getTextRtf(string textColor, string textBgColor) 
+        { 
+            StringBuilder rtfText = new StringBuilder(); 
+            rtfText.Append(@"{\rtf1\ansi\ansicpg1252\deff0\deflang1033\deflangfe2052");//rtf头 
+            rtfText.Append(@"{\fonttbl{\f0\fnil\fcharset134\''cb\''ce\''cc\''e5;}}");//字体 
+            rtfText.Append(@"{\colortbl;");//颜色 
+            rtfText.Append(textColor); 
+            rtfText.Append(textBgColor); 
+            rtfText.Append(@"}"); 
+            rtfText.Append(@"\viewkind4\uc1\pard\highlight2\lang1033\fs18\~");//最后的\~在Rtf规范中表示一个空格 
+            //rtfText.Append(string.Empty);//要显示的文本。 
+            rtfText.Append(@"\pard}");//rtf结尾//\par 
+            string rtfcode = rtfText.ToString(); 
+            return rtfcode; 
+        }  
+
+
+关于Rtf格式规范，大家可以在google上搜索一下，有中文版的提供下载，也有很多人做了简单的解释，写下我的开发过程是给其他人做个参考，别再走弯路
+
+
+
+richTextBox1.Rtf = @"{\rtf1\ansi This is in \b bold\b0.}";
+
+editorControl是一个userControl，其包含两个控件：左侧是一个用来显示行号的RichTextBox（使用label等均可），右侧是一个继承自RichTextBox的component--editorGrid1。 
+
+(1) 添加事件 
+
+ditorGrid1.TextChanged += new EventHandler(editorGrid1_TextChanged); 
+editorGrid1.VScroll += new EventHandler(editorGrid1_VScroll); 
+
+void editorGrid1_VScroll(object sender, EventArgs e) 
+{ 
+int p = editorGrid1.GetPositionFromCharIndex(0).Y % (editorGrid1.Font.Height + 1); 
+richTextBox1.Location = new Point(0, p); 
+DrewLineNumber(); 
+} 
+
+private void editorGrid1_TextChanged(object sender, EventArgs e) 
+{ 
+if ( fchange ) 
+{ 
+Regex r = new Regex(@"\*"); 
+
+if( ! r.IsMatch(Parent.Text)) 
+{ 
+Parent.Text += " *"; 
+} 
+} 
+
+DrewLineNumber(); 
+} 
+
+(2)更新行号的主函数 
+
+private void DrewLineNumber() 
+{ 
+Point pos = new Point(0, 0); 
+int firstIndex = editorGrid1.GetCharIndexFromPosition(pos); 
+int firstLine = editorGrid1.GetLineFromCharIndex(firstIndex); 
+
+pos.X = editorGrid1.ClientRectangle.Width; 
+pos.Y = editorGrid1.ClientRectangle.Height; 
+
+int endIndex = editorGrid1.GetCharIndexFromPosition(pos); 
+int endLine = editorGrid1.GetLineFromCharIndex(endIndex); 
+
+richTextBox1.Text = ""; 
+
+for (int i = firstLine; i <= endLine +1 ; i++) 
+{ 
+richTextBox1.Text += i + 1 + "\n"; 
+} 
+}
+
+string str=""; 
+foreach(string line in richTextBox1.Lines) 
+str+=line; 
+
+
+I never thought that my objects can be accessed in javascript until I discover JSON. JSON or Javascript Object Notation is a simple data transformation from your serverside objects to clientside scripting.
+A string like
+
+'person = {"firstName": "Brett", "lastName":"McLaughlin", "email":
+"brett@newInstance.com" } ' 
+
+can be deserialized into JSON object using eval. Then can be accessed as simple as person.firstName. Below is a sample javascript code:
+
+
+var myJSON = 'person = {"firstName": "Brett", "lastName":"McLaughlin",
+"email": "brett@newInstance.com" } ' ;
+eval(myJSON);
+alert(person.firsName + ' ' + person.lastName + ', ' + person.email);
+
+
+the code above will give a pop-up message saying:
+
+Brett McLaughlin, brett@newInstance.com
+
+
+Now how can we create a JSON object in C#.net and be able to pass it on clientside? Here is the procedure:
+
+1. Create a struct to be serialized as JSON:
+
+
+public struct person
+{
+public string firstName;
+public string lastName;
+public string email;
+}
+
+
+2. Create a method that will return a serialized JSON object
+
+
+public string SerializedJSON(object toSerialize, string className)
+{
+System.Web.Script.Serialization.JavaScriptSerializer jss;
+jss = new System.Web.Script.Serialization.JavaScriptSerializer();
+objectSystem.Text.StringBuilder sbControls = new
+System.Text.StringBuilder();
+jss.Serialize(toSerialize, sbControls);
+return className + "=" + sbControls.ToString();
+}
+
+
+3. then register the clientside method to call with parameter as JSON serialized string. This may be an attributes of controls event or a a method call on clientside
+
+
+//as attribute
+string serialized = SerializedJSON(person, "person");
+button1.Attributes.add("onClick",
+"parseJSON('"+ serialized +"')");
+//as method call on serverside
+
+ScriptManager.RegisterClientScriptBlock(this,this.GetType(),
+"JS
+Method Call","parseJSON('"+ serialized +"')", true);
+
+
+4. Now with those server side code, here is how we do the clientside:
+
+
+function parseJSON(serializedJSON)
+{
+eval(serializedJSON);
+alert(person.firsName + ' ' + person.lastName + ', ' +
+person.email);
+}
+
+
+You can even use JSON on array of objects and be able to call it by index on clientside like
+
+
+person[0].firstName;
+or
+person[1].firstName;
+
+
+I usually use list<object> then serialize it to JSON. And there are many things to explore on JSON and that is what I'm doing right now! Thanks JSON!
