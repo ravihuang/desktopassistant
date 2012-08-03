@@ -75,7 +75,7 @@ access to *
 	by users read
 	by anonymous auth
 	by * none
-	
+	 
 ...
 suffix		"dc=greaty,dc=com"
 rootdn		"cn=Manager,dc=greaty,dc=com"
