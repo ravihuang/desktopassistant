@@ -1,0 +1,360 @@
+svn import -m "new" hudson https://172.16.5.114/svn/hudson --username huangxy --password 00000a
+svn checkout --username huangxy --password 00000a https://172.16.5.114/svn/hudson /home/hudson
+svn update e:/hudson
+staf 172.16.5.114 process start shell command "java -version" wait stderr tostdout returnstdout
+staf 172.16.5.114 process start shell command "java -version" 
+staf 172.16.5.114 process start shell command "svn update e:/hudson" 
+staf %host process start shell command "svn update %home" 
+
+staf %host process start shell command "svn update %home" 
+
+staf %host process start shell command "yum list | grep libnet" 
+
+ldapadd -x -D "cn=Manager,dc=greaty,dc=com" -w secret -f base.ldif
+ldapsearch -x -b 'dc=greaty,dc=com' '(objectclass=*)'
+ldapdelete -x -D "cn=Manager,dc=greaty,dc=com" -w secret "dc=greaty,dc=com"
+
+/usr/local/libexec/slapd &
+
+cn=yaohua.zhang,cn=Users,DC=zyh,DC=com
+
+sipserver
+[NACS@root]kamailio
+loading modules under /usr/local/lib/kamailio/modules_k/:/usr/local/lib/kamailio/modules/
+Listening on 
+             udp: 172.16.5.152:5060
+             tcp: 172.16.5.152:5060
+Aliases: 
+             tcp: NACS:5060
+             udp: NACS:5060
+
+
+gnugk:
+1,etc/gnugk.ini
+[GkStatus::Auth]
+rule=allow
+
+2,
+[172.16.5.152@root]pwd           
+/opt/gnugk-3.0.2-linux-x86/bin
+[172.16.5.152@root]./gnugk -ttt -c ../etc/gnugk.ini &
+
+3,telnet 7000端口
+PrintAllRegistrationsVerbose
+
+
+
+mysql加用户：
+CREATE USER 'jira'@'localhost' IDENTIFIED BY 'jira';
+GRANT ALL PRIVILEGES ON *.* TO 'jira'@'localhost' WITH GRANT OPTION;
+
+CREATE USER 'jira'@'%' IDENTIFIED BY 'jira';
+GRANT ALL PRIVILEGES ON *.* TO 'jira'@'%' WITH GRANT OPTION;
+
+#character_set_server=utf8
+
+安装svn：
+遇到SSL问题，以下方式解决
+1,下载neon源文件
+2，下载svn源文件，将neon的解压缩到svn中去
+3，执行svn_ssl.sh脚本
+
+
+
+openldap配置：
+1，/usr/local/etc/openldap/slapd.conf中配置
+include   /usr/local/etc/openldap/schema/cosine.schema
+include   /usr/local/etc/openldap/schema/inetorgperson.schema
+...
+
+access to *
+  by dn.base="cn=xiaoyong.huang,ou=test,dc=greaty,dc=com" write
+   
+access to *
+	by self write
+	by users read
+	by anonymous auth
+	by * none
+	
+...
+suffix		"dc=greaty,dc=com"
+rootdn		"cn=Manager,dc=greaty,dc=com"
+
+2,debug启动：
+/usr/local/libexec/slapd -d 1
+
+3，安装：
+db4
+
+Openldap+SSL:
+假设openldap服务器已经配置好，可以正常工作。下面的步骤只是让openldap使用ssl连接。 
+这篇文档参考了http://www.openldap.org/pub/ksoper/OpenLDAP_TLS.html，那里有更详尽的介绍。 
+注：此配置在fc5下面通过。rhe系列会有不一样的地方。 
+
+0 在开始之前， 
+0.1 建议备份/etc/openldap/slapd.conf, /etc/openldap/ldap.conf 
+0.2 安装软件包openssl, openssl-perl.后者是用来创建CA认证的一个perl脚本包。 
+
+1 创建证书(certificate) 
+这一步分为3个步骤，首先把CA建立起来，然后让此CA签发一个server的证书和一个client的证书。 
+需要特别注意的是创建证书时，输入Common Name的时候一定要输入目标机器的fully qualified name 
+
+1.1 创建CA 
+这里关系到两个目录，/etc/pki/tls/misc是工作目录,/etc/pki/CA是存放所有CA相关文件的目录。 
+完成此步骤后，会在/etc/pki/CA目录下生成一系列文件，其中最重要的是 
+/etc/pki/CA/cakey.pem   CA的私钥文件 
+/etc/pki/CA/cacert.pem  CA的证书文件 
+
+tips：如果脚本检测到/etc/pki/CA下面有文件存在，那么script会安静的退出，不会创建任何东西。 
+把/etc/pki/CA下的文件全部删除，script就可以正常工作了 
+
+> cd /etc/pki/tls/misc 
+> ./CA.pl -newca 
+             
+..........忽略部分信息........ 
+writing new private key to '../../CA/private/cakey.pem' 
+Enter PEM pass phrase: <password> 
+Verifying - Enter PEM pass phrase: <password> 
+----- 
+You are about to be asked to enter information that will be incorporated 
+into your certificate request. 
+What you are about to enter is what is called a Distinguished Name or a DN. 
+There are quite a few fields but you can leave some blank 
+For some fields there will be a default value, 
+If you enter '.', the field will be left blank. 
+----- 
+Country Name (2 letter code) [GB]: <CN> 
+State or Province Name (full name) [Berkshire]:<shanghai> 
+Locality Name (eg, city) [Newbury]:<shanghai> 
+Organization Name (eg, company) [My Company Ltd]:<foo> 
+Organizational Unit Name (eg, section) []:<bar> 
+Common Name (eg, your name or your server's hostname) []:<myca.foo.com> !!!!full qualified name!!! 
+Email Address []: <[email]someone@foo.com[/email]> 
+
+Please enter the following 'extra' attributes 
+to be sent with your certificate request 
+A challenge password []: 
+An optional company name []: 
+Using configuration from /etc/pki/tls/openssl.cnf 
+Enter pass phrase for ../../CA/private/cakey.pem:<rain> 
+Check that the request matches the signature 
+Signature ok 
+                ..........忽略部分信息........ 
+
+1.2 创建server的证书 
+下面我们要创建ldap server的证书。分为两步，第一步是生成一个创建证书的请求，第二步是让CA为此请求签发证书 
+
+> ./CA.pl -newreq-nodes 
+Generating a 1024 bit RSA private key 
+............++++++ 
+.......++++++ 
+writing new private key to 'newkey.pem' 
+----- 
+You are about to be asked to enter information that will be incorporated 
+into your certificate request. 
+What you are about to enter is what is called a Distinguished Name or a DN. 
+There are quite a few fields but you can leave some blank 
+For some fields there will be a default value, 
+If you enter '.', the field will be left blank. 
+----- 
+Country Name (2 letter code) [GB]:<CN> 
+State or Province Name (full name) [Berkshire]:<Shanghai> 
+Locality Name (eg, city) [Newbury]:<Shanghai> 
+Organization Name (eg, company) [My Company Ltd]:<foo> 
+Organizational Unit Name (eg, section) []:<bar> 
+Common Name (eg, your name or your server's hostname) []:<ldapserver.foo.com> !!!!full qualified name!!! 
+Email Address []:<[email]someone@foo.com[/email]> 
+
+Please enter the following 'extra' attributes 
+to be sent with your certificate request 
+A challenge password []: 
+An optional company name []: 
+Request is in newreq.pem, private key is in newkey.pem 
+
+> ./CA.pl -sign 
+Using configuration from /etc/pki/tls/openssl.cnf 
+Enter pass phrase for ../../CA/private/cakey.pem: <password> 
+Check that the request matches the signature 
+Signature ok 
+Certificate Details: 
+                .....省略部分内容...... 
+
+Certificate is to be certified until Apr 16 22:37:14 2008 GMT (365 days) 
+Sign the certificate? [y/n]:y 
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y 
+Write out database with 1 new entries 
+Data Base Updated 
+Signed certificate is in newcert.pem 
+
+运行完两个步骤后，你会发现当前目录下创建了3个文件:  
+newreq.pem      创建证书请求文件，没什么用了 
+newcert.pem     CA签发的证书 
+newkey.pem      证书对应的私钥 
+
+首先我们重命名证书文件和私钥文件 
+mv newcert.pem server.cert 
+mv newkey.pem server.key 
+
+然后给他们设置合适的权限,特别是私钥文件，一定要只有owner能读。否则ssl安全体系形同虚设！ 
+chmod 644 server.cert 
+chmod 600 server.key  (Nobody can read it except owner!!) 
+
+最后一步是把这两个文件和CA的证书文件拷贝到openldap存放证书的目录下，一般在/etc/openldap/cacerts 
+如果CA和ldap server不在同一个机器上，那么用scp拷贝即可。这里假设他们在同一台机器上 
+
+mv server.cert /etc/openldap/cacerts 
+mv serve.key /etc/openldap/cacerts 
+cp ../../CA/cacert.pem /etc/openldap/cacerts 
+
+1.3 创建client的证书 
+创建client的证书和上面创建server的证书类似。不过要注意的是 
+1）在输入Common Name的时候一定要输入clien的fully qualified name！！ 
+2）证书文件和私钥文件可以命名为client.cert, client.key，它们和cacert.pem也拷贝到client端的/etc/openldap/cacerts 
+
+2 配置server 
+> service ldap stop # 首先停掉openldap server. 
+
+> vi /etc/openldap/slapd.conf 
+加入下面4行 
+TLSCACertificateFile /etc/openldap/cacerts/cacert.pem  # 配置CA证书的路径 
+TLSCertificateFile /etc/openldap/cacerts/server.cert    # 配置server证书的路径 
+TLSCertificateKeyFile /etc/openldap/cacerts/server.key  # 配置server私钥的路径 
+
+TLSVerifyClient never   
+# 设置是否验证client的身份，其值可以是never/allow/try/demand 
+
+3 配置client 
+
+3.1 首先我们假设ldap server不需要验证client的身份 
+也就是在/etc/openldap/slapd.con里，TLSVerifyClient 设置为never。 
+
+>vi /etc/openldap/ldap.conf 
+需要加入或修改下面的内容 
+
+URI ldaps://ldapserver.foo.com  # 一定要和server的证书里输入的full qualified name一样 
+
+TLS_CACERT /etc/openldap/cacerts/cacert.pem # CA的证书 
+TLS_REQCERT demand # client总是要求认证server端 
+
+> /usr/local/libexec/slapd -d 1 -h "ldap:/// ldaps:///" 
+> ldapsearch -x 
+如果有正确的输入，就表示配置成功了。 
+
+3.2 如果ldap server需要验证client的身份 
+也就是在/etc/openldap/slapd.conf里，TLSVerifyClient设置为demand。这种情况下，client需要有自己的证书和私钥。 
+配置clieng的证书和私钥只能在用户home目录下的ldaprc文件里。 
+
+> vi ~/ldaprc 
+加入下面的内容 
+
+TLS_REQCERT demand 
+TLS_CERT /etc/openldap/cacerts/client.cert 
+TLS_KEY /etc/openldap/cacerts/client.key 
+
+注意此用户对/etc/openldap/cacerts/client.key要有可读的权限！！ 
+这个是黄小勇破解的
+> /usr/local/libexec/slapd -h "ldap:/// ldaps:///" &
+> ldapsearch -x 
+如果有正确的输入，就表示配置成功了。 
+
+4 调试方法 
+
+4.1 在调试模式启动slapd 
+>  /usr/local/libexec/slapd -d127 -h "ldap:/// ldaps:///" 
+-d127是指定调试级别。slapd会在当前console启动，所有的连接信息都会在屏幕上打印出来。 
+
+4.2 用openssl client连接ssl 服务器 
+
+4.2.1 对于不需要client验证的情况 
+> openssl s_client -connect ldapserver.foo.com:636 -showcerts -state -CAfile /etc/openldap/cacerts/cacert.pem 
+        file /etc/openldap/cacerts/cacert.pem 
+        CONNECTED(00000003) 
+        SSL_connect:before/connect initialization 
+        SSL_connect:SSLv2/v3 write client hello A 
+        SSL_connect:SSLv3 read server hello A 
+        depth=1 /C=CN/ST=shanghai/O=dean/OU=mobile/CN=fedora.dean.com/emailAddress=ss@ss.com 
+        verify return:1 
+        depth=0 /C=CN/ST=Shanga/L=shanghai/O=dean/OU=home/CN=fedora.dean.com/emailAddress=sdf@ss.com 
+        verify return:1 
+        SSL_connect:SSLv3 read server certificate A 
+        SSL_connect:SSLv3 read server done A 
+        SSL_connect:SSLv3 write client key exchange A 
+        SSL_connect:SSLv3 write change cipher spec A 
+
+        .......省略了部分内容....... 
+
+        Compression: NONE 
+        Expansion: NONE 
+        SSL-Session: 
+            Protocol  : TLSv1 
+            Cipher    : AES256-SHA 
+            Session-ID: 03FDE102050C7828C39E03D7A3F526E6E9D256115A0ADF7793538B616C5548ED 
+            Session-ID-ctx:  
+            Master-Key: 07A62B4E5060BF4542E49DC33C2C6D6F10FF266F48856A780187C759A3007CF2F18ECAB49DBA8915394D52179AC8FE9B 
+            Key-Arg   : None 
+            Krb5 Principal: None 
+            Start Time: 1198247985 
+            Timeout   : 300 (sec) 
+            Verify return code: 0 (ok) 
+        --- 
+用"CTRL-C" 退出 
+
+4.2.2 对于需要clien验证的情况 
+> openssl s_client -connect ldapserver.foo.com:636 -showcerts -state \ 
+    -CAfile /etc/openldap/cacerts/cacert.pem  
+    -cert /etc/openldap/cacerts/client.cert 
+    -key /etc/openldap/cacerts/client.key
+
+
+
+
+
+freeradius配置(用ldap做认证)：
+1，配置/etc/raddb/modules/ldap：
+	server = "127.0.0.1"
+	identity = "cn=Manager,dc=greaty,dc=com" 
+	password = secret
+	basedn = "ou=people,dc=greaty,dc=com"
+	filter = "(cn=%{User-Name})"
+	
+2，/etc/raddb/clients.conf中配置：
+client 172.16.0.0/16 {
+	secret		= testing123
+	shortname	= private-network-1
+}
+	
+3，/etc/raddb/sites-available/default中配置：
+authorize{
+	ldap
+}
+authenticate {
+	Auth-Type PAP {
+		pap
+	}
+}
+
+
+4，/etc/raddb/proxy.conf
+realm NULL {  
+       type        = radius  
+       authhost    = LOCAL  
+       accthost    = LOCAL  
+       nostrip  
+}  
+
+realm greaty {  
+        type    = radius  
+        authhost = LOCAL  
+        accthost = LOCAL  
+}
+
+5，debug启动
+/usr/sbin/radiusd -X -d /etc/raddb
+
+6，安装
+freeradius.i686                            2.1.12-3.el6                  @base  
+freeradius-ldap.i686                       2.1.12-3.el6                  @base  
+freeradius-utils.i686                      2.1.12-3.el6                  @base  
+
