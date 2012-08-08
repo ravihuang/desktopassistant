@@ -60,7 +60,7 @@ namespace activeWindow
                 return "";
             return value.ToString(); 
         }
-
+       
         public void walkSubItemTestCase(Worksheet sheet, int row)
         {
             testcases = new List<string>();
@@ -70,7 +70,7 @@ namespace activeWindow
             if (cellA == null||cellA.Trim().Length==0)
             {
                 logger.AppendLine("所选行A列不能为空！"+row);
-                return;
+                return ;
             }
 
 
@@ -115,11 +115,29 @@ namespace activeWindow
                     cells[i]=(string)values.GetValue(1, i).ToString().Trim();
             }
 
-            if (cells[(int)colName.STEP]!=""&&cells[(int)colName.EXP_RESULT]!="")
-            {          
+            if (cells[(int)colName.STEP] != "" && cells[(int)colName.EXP_RESULT] != "")
+            {
                 //walkSubItemTestCase(sheet, row);
                 return true;
             }
+            else
+            {
+                logger.AppendLine("Warning:步骤和预期结果不能为空 row " + row);                
+            }
+
+            string samples=cells[(int)colName.CASE_VAR];
+            int es=samples.IndexOf("=");
+            if (es == -1)
+            {
+                logger.AppendLine("Warning:样本点格式不正确 row " + row);
+            }
+            else {
+                if (samples.Substring(0, es).Trim().IndexOf(" ") == -1)
+                    logger.AppendLine("Warning:样本点名字中不能有空格 row " + row);
+                else
+                    return true;
+            }
+
             return false;
         }
         
@@ -209,10 +227,10 @@ namespace activeWindow
                 
                 int cnt = Math.Min(s.Length, 4);
 
-                int p = s.IndexOfAny(new char[3] { ',', '，', ' ' }, 0, cnt);
+                int p = s.IndexOfAny(new char[4] { '.', ',', '，', ' ' }, 0, cnt);
                 if (p == -1||s.Length<4)
                 {
-                    logger.AppendLine("Warning:预期结果格式非法" + cells[(int)colName.FEATUREID] + "：" + s);
+                    logger.AppendLine("Warning:预期结果格式非法" + cells[(int)colName.FEATUREID]);
                     p = 0;
                 }
                 arrResult.Add(s.Substring(p + 1).Trim());
@@ -232,10 +250,10 @@ namespace activeWindow
                 if (s.Length == 0)
                     continue;
                 int cnt = Math.Min(s.Length, 4);
-                int p = s.IndexOfAny(new char[3] { ',', '，', ' ' }, 0, cnt);
+                int p = s.IndexOfAny(new char[4] { '.', ',', '，', ' ' }, 0, cnt);
                 if (p == -1 || s.Length < 4)
                 {
-                    logger.AppendLine("Warning:step格式非法" + cells[(int)colName.FEATUREID] + "：" + s);
+                    logger.AppendLine("Warning:step格式非法" + cells[(int)colName.FEATUREID]);
                     p = 0;
                 }
                 arrStep.Add(s.Substring(p + 1).Trim());

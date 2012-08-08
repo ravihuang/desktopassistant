@@ -298,7 +298,7 @@ namespace activeWindow
 
         public void rangeToGrout(Excel.Worksheet sheet,int from,int to) {
             Range range = sheet.get_Range(sheet.Cells[from+2, 1], sheet.Cells[to+1, 1]);
-            //this.AppendLine("group from " + (from + 2) + " to " + (to + 1)); 
+            this.AppendLine("group from " + (from + 2) + " to " + (to + 1)); 
             range.Rows.Group(Type.Missing, Type.Missing, Type.Missing, Type.Missing);
             
         }
@@ -325,6 +325,8 @@ namespace activeWindow
                  }
                  if (id[i] > -1 && row_begin == -1)
                      row_begin = i;
+                 if (id[i] > 6)
+                     this.AppendLine("Warn:层级太多，row:" + i);
              }
 
              int used = -1;         
@@ -475,16 +477,25 @@ namespace activeWindow
             {
                 int rows = sheet.UsedRange.Rows.Count;
                 int curr_flag = 0;
+                bool isok = true;
                 for (int i = 3; i <rows; i++)
                 {
                     Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
                     Array values = (Array)tmprange.Cells.Value2;
                     Object c1 = values.GetValue(1, 1);
                     Object c2 = values.GetValue(1, 2);
-                    if (c1 == null && c2 == null)
+                    if (c1 == null)
                     {
-                        this.AppendLine("Warning:空白行,row" + i);
-                        continue;
+                        if (c2 == null)
+                        {
+                            this.AppendLine("Warning:空白行,row " + i);
+                            isok = false;
+                            continue;
+                        }
+                        else
+                        {
+                            curr_flag = c2.ToString().Split(new string[] { "_" }, StringSplitOptions.None).Length;
+                        }
                     }
                     if (c1 == null)
                         continue;
@@ -492,11 +503,13 @@ namespace activeWindow
                     int flag = c1.ToString().Split(new string[] { "_" }, StringSplitOptions.None).Length;
 
                     if (flag > 5) {
-                        this.AppendLine("Warning:层级大过5,row" + i);
+                        this.AppendLine("Warning:层级大过5,row " + i);
+                        isok = false;
+                        
                         continue;
                     }
 
-                    if (curr_flag == 0)
+                    if (curr_flag <= 0)
                     {
                         curr_flag = flag;
                         continue;
@@ -504,25 +517,30 @@ namespace activeWindow
                     
                     if ((flag - curr_flag) > 1)
                     {
-                        this.AppendLine("Warning:缺少中间模块,row"+ i);                        
-                    }
-                    curr_flag = flag;
+                        this.AppendLine("Warning:缺少中间模块,row "+ i);
+                        isok = false;
+                    }                   
 
                     if (flag == 5) 
                     {
+                        if (curr_flag == 5) {
+                            this.AppendLine("Warning:没有生产用例 row " + (i-1));
+                            isok = false; 
+                        }
                         DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
                         if (!itc.InitialTestcase(sheet, i))
+                        {                            
+                            isok = false;                            
+                        }else if(itc.getSteps().Count!=itc.getExpRsts().Count)
                         {
-                            this.AppendLine("Warning:步骤和预期结果不能为空 row" + i);
-                            continue;
-                        }
-                        if(itc.getSteps().Count!=itc.getExpRsts().Count)
-                        {
-                            this.AppendLine("Warning:步骤和预期结果长度不一致 row" + i);
-                            continue;
-                        }
-                    }                    
+                            this.AppendLine("Warning:步骤和预期结果长度不一致 row " + i);
+                            isok = false;                            
+                        }                                                
+                    }
+                    curr_flag = flag;
                 }
+                if (isok)
+                    this.AppendLine("End!");
             }
             catch (Exception ex)
             {
