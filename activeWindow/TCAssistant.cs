@@ -581,6 +581,39 @@ namespace activeWindow
 
         }
 
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (!initTestcaseBox())
+            {
+                return;
+            }
+
+            Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
+            int rows = sheet.UsedRange.Rows.Count;
+
+            for (int i = 3; i < rows; i++)
+            {
+                Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
+                Array values = (Array)tmprange.Cells.Value2;
+                Object c1 = values.GetValue(1, 1);
+                Object c2 = values.GetValue(1, 2);
+                string parent = "";
+                if (c1 != null)
+                {
+                    parent = c1.ToString();
+                    continue;
+                }
+                
+                if (c2 != null)
+                {
+                    continue;
+                }
+                    
+                }
+
+            
+        }
+
     }    
 
 }

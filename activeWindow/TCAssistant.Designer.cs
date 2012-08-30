@@ -45,6 +45,7 @@ namespace activeWindow
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.bOpt = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.bCheckStyle = new System.Windows.Forms.Button();
             this.bDelSubTC = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
@@ -53,11 +54,13 @@ namespace activeWindow
             this.bGenGroup = new System.Windows.Forms.Button();
             this.bGenTestcase = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.bToTL = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tbTestcase = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.cbScriptType = new System.Windows.Forms.ComboBox();
             this.tabPageStaf = new System.Windows.Forms.TabPage();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.txtResult = new System.Windows.Forms.TextBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.lOs = new System.Windows.Forms.Label();
@@ -90,8 +93,6 @@ namespace activeWindow
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.button3 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPageScript.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -100,6 +101,7 @@ namespace activeWindow
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabPageStaf.SuspendLayout();
+            this.groupBox9.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -107,7 +109,6 @@ namespace activeWindow
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // bGen
@@ -116,7 +117,7 @@ namespace activeWindow
             this.bGen.Name = "bGen";
             this.bGen.Size = new System.Drawing.Size(44, 23);
             this.bGen.TabIndex = 3;
-            this.bGen.Text = "生成";
+            this.bGen.Text = "Go";
             this.bGen.UseVisualStyleBackColor = true;
             this.bGen.Click += new System.EventHandler(this.bGen_Click);
             // 
@@ -269,6 +270,16 @@ namespace activeWindow
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "用例编辑";
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(110, 109);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(67, 23);
+            this.button3.TabIndex = 13;
+            this.button3.Text = "步骤整理";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // bCheckStyle
             // 
             this.bCheckStyle.Location = new System.Drawing.Point(41, 51);
@@ -343,6 +354,7 @@ namespace activeWindow
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.bToTL);
             this.groupBox2.Controls.Add(this.bSelect);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.textBox1);
@@ -356,16 +368,26 @@ namespace activeWindow
             this.groupBox2.Size = new System.Drawing.Size(182, 173);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "脚本生成及优化";
+            this.groupBox2.Text = "用例转换";
+            // 
+            // bToTL
+            // 
+            this.bToTL.Location = new System.Drawing.Point(6, 95);
+            this.bToTL.Name = "bToTL";
+            this.bToTL.Size = new System.Drawing.Size(75, 23);
+            this.bToTL.TabIndex = 8;
+            this.bToTL.Text = "ToXML";
+            this.bToTL.UseVisualStyleBackColor = true;
+            this.bToTL.Click += new System.EventHandler(this.button7_Click);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(18, 72);
+            this.label4.Location = new System.Drawing.Point(6, 71);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(29, 12);
+            this.label4.Size = new System.Drawing.Size(41, 12);
             this.label4.TabIndex = 7;
-            this.label4.Text = "类型";
+            this.label4.Text = "To脚本";
             // 
             // tbTestcase
             // 
@@ -408,6 +430,16 @@ namespace activeWindow
             this.tabPageStaf.TabIndex = 1;
             this.tabPageStaf.Text = "STAF";
             this.tabPageStaf.UseVisualStyleBackColor = true;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.txtResult);
+            this.groupBox9.Location = new System.Drawing.Point(6, 189);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(530, 143);
+            this.groupBox9.TabIndex = 28;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Log";
             // 
             // txtResult
             // 
@@ -750,26 +782,6 @@ namespace activeWindow
             this.tabPage4.Text = "IPOM";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.txtResult);
-            this.groupBox9.Location = new System.Drawing.Point(6, 189);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(530, 143);
-            this.groupBox9.TabIndex = 28;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Log";
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(110, 109);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(67, 23);
-            this.button3.TabIndex = 13;
-            this.button3.Text = "步骤整理";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
             // TCAssistant
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -796,6 +808,8 @@ namespace activeWindow
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabPageStaf.ResumeLayout(false);
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox7.ResumeLayout(false);
@@ -806,8 +820,6 @@ namespace activeWindow
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
-            this.groupBox9.ResumeLayout(false);
-            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -877,5 +889,6 @@ namespace activeWindow
         private System.Windows.Forms.Button bCheckStyle;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button bToTL;
     }
 }

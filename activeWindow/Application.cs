@@ -3,11 +3,65 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using Word;
+using System.IO;
+using System.Xml.Serialization;
+using System.Xml;
 
 namespace activeWindow
 {
     class Application
     {
+        [STAThread]
+        public static void Main()
+        {
+            testsuite ts = testsuite.LoadFromFile(@"F:\vs\all_testsuites_u8.xml");
+            
+            //StreamReader str = new StreamReader(@"F:\vs\all_testsuites_u8.xml");
+            //XmlSerializer xSerializer = new XmlSerializer(typeof(testsuite));
+            
+            //ts = (testsuite)xSerializer.Deserialize(str);
+           /* foreach (GetBusinessCardCallResponseBusinessCards result in bcResponse.Items.ToList<GetBusinessCardCallResponseBusinessCards>()) 
+            {
+                var businessCards = result.BusinessCard.ToArray<GetBusinessCardCallResponseBusinessCardsBusinessCard>(); 
+                foreach (GetBusinessCardCallResponseBusinessCardsBusinessCard bc in businessCards) { 
+                    Console.Write(bc.firstName); 
+                    Console.Write(" "); 
+                    Console.WriteLine(bc.lastName); 
+                } 
+                Console.WriteLine(); 
+            }*/ 
+            
+            //str.Close(); 
+            Console.ReadLine(); 
+        }
+        
+        public static string readFromFile(string fileName)
+        {
+            System.IO.FileStream file = null;
+            System.IO.StreamReader sr = null;
+            string xmlString = "";
+            try
+            {
+                file = new System.IO.FileStream(fileName, FileMode.Open, FileAccess.Read);
+                sr = new System.IO.StreamReader(file);
+                xmlString = sr.ReadToEnd();
+                sr.Close();
+                file.Close();                
+            }
+            finally
+            {
+                if ((file != null))
+                {
+                    file.Dispose();
+                }
+                if ((sr != null))
+                {
+                    sr.Dispose();
+                }
+            }
+            return xmlString;
+        }
+
         [STAThread]
         public static void Main1()
         {
@@ -17,7 +71,7 @@ namespace activeWindow
             Console.Write("llll");
         }
         [STAThread]
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             Word.ApplicationClass WordApp = new Word.ApplicationClass();
 

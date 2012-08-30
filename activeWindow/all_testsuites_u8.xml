@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>	
+<testsuite xsi:noNamespaceSchemaLocation="file:///f:/vs/testlink.xsd"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="NFE">
+	
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="baseline">
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[<p>基线测试套</p>]]> 
+</details>
+<testcase internalid="3" name="SVT_NFE_WIFIR2_FUNC_0010">
+	<node_order><![CDATA[0]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>摘要</p>]]></summary>
+	<preconditions><![CDATA[<p>&nbsp;preset&nbsp;</p>]]></preconditions>
+	<execution_type><![CDATA[2]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[<p>&nbsp;step1:</p>]]></actions>
+	<expectedresults><![CDATA[<p>&nbsp;expect1:</p>]]></expectedresults>
+	<execution_type><![CDATA[2]]></execution_type>
+</step>
+
+<step>
+	<step_number><![CDATA[2]]></step_number>
+	<actions><![CDATA[<p>&nbsp;step2:</p>]]></actions>
+	<expectedresults><![CDATA[<p>&nbsp;expect2:</p>]]></expectedresults>
+	<execution_type><![CDATA[2]]></execution_type>
+</step>
+</steps>
+<custom_fields>
+	<custom_field>
+		<name><![CDATA[test_type]]></name>
+		<value><![CDATA[]]></value>
+	</custom_field>	<custom_field>
+		<name><![CDATA[test_sample]]></name>
+		<value><![CDATA[]]></value>
+	</custom_field>
+</custom_fields>
+<requirements>
+		<requirement>
+			<req_spec_title><![CDATA[hrhd]]></req_spec_title>
+			<doc_id><![CDATA[DS_PLUGIN_1]]></doc_id>
+			<title><![CDATA[asdasd]]></title>
+		</requirement>
+	</requirements>
+</testcase>
+
+<testcase internalid="7" name="SVT_NFE_WIFIR2_FUNC_0020">
+	<node_order><![CDATA[1]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;概要&nbsp;</p>]]></summary>
+	<preconditions><![CDATA[<p>&nbsp;前提</p>]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[<p>&nbsp;step1:</p>]]></actions>
+	<expectedresults><![CDATA[<p>&nbsp;expect1:</p>]]></expectedresults>
+	<execution_type><![CDATA[2]]></execution_type>
+</step>
+
+<step>
+	<step_number><![CDATA[2]]></step_number>
+	<actions><![CDATA[<p>&nbsp;step2:</p>]]></actions>
+	<expectedresults><![CDATA[<p>&nbsp;expect2:</p>]]></expectedresults>
+	<execution_type><![CDATA[2]]></execution_type>
+</step>
+</steps>
+    <custom_fields>
+	    <custom_field>
+		    <name><![CDATA[test_type]]></name>
+  		    <value><![CDATA[a;b; c d]]></value>
+	    </custom_field>
+        <custom_field>
+		    <name><![CDATA[test_sample]]></name>
+		    <value><![CDATA[啊的飒爽的]]></value>
+ 	    </custom_field>
+    </custom_fields>
+    <requirements>
+		<requirement>
+			<req_spec_title><![CDATA[hrhd]]></req_spec_title>
+			<doc_id><![CDATA[DS_PLUGIN_1]]></doc_id>
+			<title><![CDATA[asdasd]]></title>
+		</requirement>
+	</requirements>
+</testcase>
+<testsuite name="棒棒糖">
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="ttc">
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="ttd">
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="14" name="asd">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[<p>&nbsp;step1:</p>]]></actions>
+	<expectedresults><![CDATA[<p>&nbsp;expect1:</p>]]></expectedresults>
+	<execution_type><![CDATA[2]]></execution_type>
+</step>
+
+<step>
+	<step_number><![CDATA[2]]></step_number>
+	<actions><![CDATA[<p>&nbsp;step2:</p>]]></actions>
+	<expectedresults><![CDATA[<p>&nbsp;expect2:</p>]]></expectedresults>
+	<execution_type><![CDATA[2]]></execution_type>
+</step>
+</steps>
+<custom_fields>
+	<custom_field>
+		<name><![CDATA[test_type]]></name>
+		<value><![CDATA[]]></value>
+	</custom_field>	<custom_field>
+		<name><![CDATA[test_sample]]></name>
+		<value><![CDATA[]]></value>
+	</custom_field>
+</custom_fields>
+    <requirements>
+		<requirement>
+			<req_spec_title><![CDATA[hrhd]]></req_spec_title>
+			<doc_id><![CDATA[DS_PLUGIN_2]]></doc_id>
+			<title><![CDATA[asdasd]]></title>
+		</requirement>
+	</requirements>
+</testcase>
+</testsuite></testsuite></testsuite></testsuite></testsuite>
+
+
+

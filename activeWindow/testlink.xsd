@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wmh="http://www.wmhelp.com/2003/eGenerator" elementFormDefault="qualified">
+  <xs:element name="testsuite">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="node_order" />
+        <xs:element ref="details" />
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="testcase"/>
+          <xs:element ref="testsuite"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="node_order">
+    <xs:simpleType>
+      <xs:restriction base="xs:unsignedInt">
+        <xs:minInclusive value="0" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="details" type="xs:string"/>
+  <xs:element name="testcase">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="node_order"/>
+        <xs:element ref="externalid"/>
+        <xs:element ref="version"/>
+        <xs:element ref="summary"/>
+        <xs:element ref="preconditions"/>
+        <xs:element ref="execution_type"/>
+        <xs:element ref="importance"/>
+        <xs:element ref="steps"/>
+        <xs:element ref="custom_fields"/>
+        <xs:element ref="requirements"/>
+      </xs:sequence>
+      <xs:attribute name="internalid" type="xs:string" use="required"/>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="externalid" type="xs:unsignedInt"/>
+  <xs:element name="version" type="xs:unsignedInt"/>
+  <xs:element name="summary" type="xs:string" />
+  <xs:element name="preconditions" type="xs:string"/>
+  <xs:element name="execution_type" type="xs:unsignedInt"/>
+  <xs:element name="importance" type="xs:unsignedInt"/>
+
+  <xs:element name="steps">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="step" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="step">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="step_number"/>
+        <xs:element ref="actions"/>
+        <xs:element ref="expectedresults"/>
+        <xs:element ref="execution_type"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="step_number" type="xs:unsignedInt"/>
+  <xs:element name="actions" type="xs:string" />
+  <xs:element name="expectedresults" type="xs:string" />
+  <xs:element name="custom_fields">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="custom_field" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="custom_field">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="value"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name" type="xs:string" />
+  <xs:element name="value" type="xs:string" />
+  <xs:element name="requirements" >
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="requirement"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="requirement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="req_spec_title"/>
+        <xs:element ref="doc_id"/>
+        <xs:element ref="title"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="req_spec_title" type="xs:string" />
+  <xs:element name="doc_id" type="xs:string" />
+  <xs:element name="title" type="xs:string" />
+</xs:schema>
