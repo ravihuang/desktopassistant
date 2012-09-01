@@ -3,7 +3,6 @@ using Xml = System.Xml;
 using System.IO;
 /**
  * 
- * 
  * @revision 
  * 20120428 修改plugin临时文件路径,修改前为系统临时文件夹，修改后为plugins目录下tmp文件夹
  * 

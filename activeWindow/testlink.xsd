@@ -5,7 +5,7 @@
       <xs:sequence>
         <xs:element ref="node_order" />
         <xs:element ref="details" />
-        <xs:choice maxOccurs="unbounded">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
           <xs:element ref="testcase"/>
           <xs:element ref="testsuite"/>
         </xs:choice>
@@ -13,14 +13,7 @@
       <xs:attribute name="name" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
-  <xs:element name="node_order">
-    <xs:simpleType>
-      <xs:restriction base="xs:unsignedInt">
-        <xs:minInclusive value="0" />
-      </xs:restriction>
-    </xs:simpleType>
-  </xs:element>
-
+  <xs:element name="node_order" type="xs:unsignedInt" default="1"/>
   <xs:element name="details" type="xs:string"/>
   <xs:element name="testcase">
     <xs:complexType>
@@ -34,7 +27,7 @@
         <xs:element ref="importance"/>
         <xs:element ref="steps"/>
         <xs:element ref="custom_fields"/>
-        <xs:element ref="requirements"/>
+        <xs:element ref="requirements" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute name="internalid" type="xs:string" use="required"/>
       <xs:attribute name="name" type="xs:string" use="required"/>
@@ -87,7 +80,7 @@
   <xs:element name="requirements" >
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="requirement"/>
+        <xs:element ref="requirement" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -54,6 +54,11 @@ namespace activeWindow
             this.bGenGroup = new System.Windows.Forms.Button();
             this.bGenTestcase = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.bSplit = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.bToTL = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.tbTestcase = new System.Windows.Forms.TextBox();
@@ -212,7 +217,7 @@ namespace activeWindow
             this.groupBox5.Controls.Add(this.bOpt);
             this.groupBox5.Location = new System.Drawing.Point(396, 8);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(140, 173);
+            this.groupBox5.Size = new System.Drawing.Size(132, 103);
             this.groupBox5.TabIndex = 7;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "脚本格式化";
@@ -240,7 +245,7 @@ namespace activeWindow
             // 
             this.textBox3.Location = new System.Drawing.Point(41, 15);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(91, 21);
+            this.textBox3.Size = new System.Drawing.Size(84, 21);
             this.textBox3.TabIndex = 1;
             // 
             // bOpt
@@ -354,6 +359,11 @@ namespace activeWindow
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.textBox4);
+            this.groupBox2.Controls.Add(this.bSplit);
+            this.groupBox2.Controls.Add(this.textBox2);
+            this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.bToTL);
             this.groupBox2.Controls.Add(this.bSelect);
             this.groupBox2.Controls.Add(this.label4);
@@ -365,20 +375,63 @@ namespace activeWindow
             this.groupBox2.Controls.Add(this.cbScriptType);
             this.groupBox2.Location = new System.Drawing.Point(208, 11);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(182, 173);
+            this.groupBox2.Size = new System.Drawing.Size(182, 169);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "用例转换";
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 124);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(71, 12);
+            this.label11.TabIndex = 13;
+            this.label11.Text = "拆分为(1/n)";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(82, 121);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(42, 21);
+            this.textBox4.TabIndex = 12;
+            // 
+            // bSplit
+            // 
+            this.bSplit.Location = new System.Drawing.Point(130, 121);
+            this.bSplit.Name = "bSplit";
+            this.bSplit.Size = new System.Drawing.Size(45, 23);
+            this.bSplit.TabIndex = 11;
+            this.bSplit.Text = "Go";
+            this.bSplit.UseVisualStyleBackColor = true;
+            this.bSplit.Visible = false;
+            this.bSplit.Click += new System.EventHandler(this.bSplit_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(53, 94);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(72, 21);
+            this.textBox2.TabIndex = 10;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 99);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(35, 12);
+            this.label10.TabIndex = 9;
+            this.label10.Text = "ToXML";
+            // 
             // bToTL
             // 
-            this.bToTL.Location = new System.Drawing.Point(6, 95);
+            this.bToTL.Location = new System.Drawing.Point(130, 94);
             this.bToTL.Name = "bToTL";
-            this.bToTL.Size = new System.Drawing.Size(75, 23);
+            this.bToTL.Size = new System.Drawing.Size(45, 23);
             this.bToTL.TabIndex = 8;
-            this.bToTL.Text = "ToXML";
+            this.bToTL.Text = "Go";
             this.bToTL.UseVisualStyleBackColor = true;
-            this.bToTL.Click += new System.EventHandler(this.button7_Click);
+            this.bToTL.Click += new System.EventHandler(this.bToTL_Click);
             // 
             // label4
             // 
@@ -412,7 +465,7 @@ namespace activeWindow
             // 
             this.cbScriptType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbScriptType.FormattingEnabled = true;
-            this.cbScriptType.Location = new System.Drawing.Point(53, 69);
+            this.cbScriptType.Location = new System.Drawing.Point(53, 68);
             this.cbScriptType.Name = "cbScriptType";
             this.cbScriptType.Size = new System.Drawing.Size(72, 20);
             this.cbScriptType.Sorted = true;
@@ -890,5 +943,10 @@ namespace activeWindow
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button bToTL;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button bSplit;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox textBox4;
     }
 }

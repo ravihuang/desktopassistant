@@ -12,10 +12,11 @@ namespace activeWindow
     class Application
     {
         [STAThread]
-        public static void Main()
+        public static void Main4()
         {
-            testsuite ts = testsuite.LoadFromFile(@"F:\vs\all_testsuites_u8.xml");
-            
+            testlink tl = new testlink();
+            //testlink.saveToFile(tl.getTestsuite(), "");
+           // ts.Items.Add();
             //StreamReader str = new StreamReader(@"F:\vs\all_testsuites_u8.xml");
             //XmlSerializer xSerializer = new XmlSerializer(typeof(testsuite));
             
@@ -63,11 +64,12 @@ namespace activeWindow
         }
 
         [STAThread]
-        public static void Main1()
+        public static void Main()
         {
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
             System.Windows.Forms.Application.Run(new TCAssistant());
+            //new TCAssistant().button7_Click(null,null);
             Console.Write("llll");
         }
         [STAThread]

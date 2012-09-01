@@ -20,35 +20,42 @@ namespace activeWindow
 
         protected Excel.Worksheet sheet;
         protected ILog logger;
-        
+        public enum subColName
+        {
+            ID0=0,
+            ID=1,
+            SAMPLES = 'E' - 'A',
+            REQ = 'U' - 'A'
+        }
         public enum colName { 
-            FEATUREID=1,//索引	
-            FEATURE_DESC,//描述	
-            CASE_DESC,//设计描述	
-            PRESET,//预置条件	
-            CASE_VAR,//Pairwise样本点	
-            STEP,//步骤	
-            EXP_RESULT,//预期结果	
-            EXE_RESULT,//执行结果	
+            FEATUREID=1,//索引
+            FEATURE_DESC,//描述
+            CASE_DESC,//设计描述
+            PRESET,//预置条件
+            CASE_VAR,//Pairwise样本点
+            STEP,//步骤
+            EXP_RESULT,//预期结果
+            EXE_RESULT,//执行结果
             EXE_OWNER,//测试人
-            TYPE,//测试类型	
-            PRIORITY,//用例优先级	
-            CATEGORY,//测试层级	
-            CASE_OWNER,//作者	
-            CAN_AUTO,//能否自动化	
-            REASON,//原因	
-            SCRIPT_NAME,//脚本名称	
-            SCRIPT_OWNER,//作者	
-            DES_LEVEL,//设计层级	
-            RELATED_FEATURES,//相关特性	
-            PRODUCT,//适用产品	
-            DS_ID,//需求编号	
-            RELATED_FUNC,//相关函数	
-            RELATED_MODULE,//相关模块	
-            BUG_ID,//问题单ID	
+            TYPE,//测试类型
+            PRIORITY,//用例优先级
+            CATEGORY,//测试层级
+            CASE_OWNER,//作者
+            CAN_AUTO,//能否自动化
+            REASON,//原因
+            SCRIPT_NAME,//脚本名称
+            SCRIPT_OWNER,//作者
+            DES_LEVEL,//设计层级
+            RELATED_FEATURES,//相关特性
+            PRODUCT,//适用产品
+            DS_ID,//需求编号
+            RELATED_FUNC,//相关函数
+            RELATED_MODULE,//相关模块
+            BUG_ID,//问题单ID
             DS_OWNER,//作者
             TC_MAX
         };
+
         public bool CanAuto()
         {
             return cells[(int)colName.CAN_AUTO].ToLower() == "true";
@@ -60,7 +67,10 @@ namespace activeWindow
                 return "";
             return value.ToString(); 
         }
-       
+        protected string GetCellValue(string cell)
+        {           
+            return GetCellValue(sheet,cell);
+        }
         public void walkSubItemTestCase(Worksheet sheet, int row)
         {
             testcases = new List<string>();
@@ -72,7 +82,6 @@ namespace activeWindow
                 logger.AppendLine("所选行A列不能为空！"+row);
                 return ;
             }
-
 
             while (true) {
                 row++;
@@ -104,6 +113,7 @@ namespace activeWindow
             if (row <= 2) {
                 return false;
             }
+            this.sheet = sheet;
             Range range = sheet.get_Range("A" + row, "Z" + row);
             Array values = (Array)range.Cells.Value2;
 
@@ -131,7 +141,8 @@ namespace activeWindow
             {
                 logger.AppendLine("Warning:样本点格式不正确 row " + row);
             }
-            else {
+            else 
+            {
                 if (samples.Substring(0, es).Trim().IndexOf(" ") == -1)
                     logger.AppendLine("Warning:样本点名字中不能有空格 row " + row);
                 else
@@ -209,16 +220,18 @@ namespace activeWindow
 
             return true;
         }
+
         public void setLogger(ILog log)
         {
             this.logger = log;
         }
-        public ArrayList getExpRsts()
+
+        public List<string> getExpRsts()
         {
             //处理测试用例中的"预期结果"字段
             string result = cells[(int)colName.EXP_RESULT];
             string[] results = result.Split(new char[1] { '\n' });
-            ArrayList arrResult = new ArrayList();
+            List<string> arrResult = new List<string>();
             for (int i = 0; i < results.Length; i++)
             {
                 string s = results[i].Trim();
@@ -236,14 +249,16 @@ namespace activeWindow
                 arrResult.Add(s.Substring(p + 1).Trim());
 
             }
-            arrResult.TrimToSize();
+            arrResult.TrimExcess();
             return arrResult;
         }
-        public ArrayList getSteps() {
+
+        public List<string> getSteps() 
+        {
             //处理测试用例中的"步骤"字段
             string step = cells[(int)colName.STEP];
             string[] steps = step.Split(new char[1] { '\n' });
-            ArrayList arrStep = new ArrayList();
+            List<string> arrStep = new List<string>();
             for (int i = 0; i < steps.Length; i++)
             {
                 string s = steps[i].Trim();
@@ -258,20 +273,29 @@ namespace activeWindow
                 }
                 arrStep.Add(s.Substring(p + 1).Trim());
             }
-            arrStep.TrimToSize();
+            arrStep.TrimExcess();
             return arrStep;
             
         }
+
         public abstract string ToScript();
+
         public virtual string GetScriptName()
         {
-
             return cells[(int)colName.SCRIPT_NAME];
+        }
+
+        public string GetCell(colName cn)
+        {
+            return cells[(int)cn];
+        }
+ 
+        public string GetSubCase(int row, subColName col)
+        {
+            return this.GetCellValue(Convert.ToChar('A'+(int)col)+""+row);
         }
 
         public abstract string Optimize();
         #endregion
-
-        
     }
 }

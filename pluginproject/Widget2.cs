@@ -2,7 +2,9 @@ using System;
 using System.Runtime.InteropServices;
 using activeWindow;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
+
 namespace Widgets.SecondSet
 {
     public class Widget2 : DefaultTC
@@ -110,8 +112,8 @@ namespace Widgets.SecondSet
                
             }
             arrResult.TrimToSize();*/
-            ArrayList arrStep =this.getSteps();
-            ArrayList arrResult = this.getExpRsts();
+            List<string> arrStep =this.getSteps();
+            List<string> arrResult = this.getExpRsts();
             //确认步骤和结果长度匹配
             if (arrResult.Count != arrStep.Count)
             {

@@ -126,6 +126,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="testlink.cs">
+      <DependentUpon>testlink.xsd</DependentUpon>
+    </Compile>
     <Compile Include="testlink.designer.cs" />
     <Content Include="App.ico" />
     <Compile Include="AssemblyInfo.cs">

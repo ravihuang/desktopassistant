@@ -519,7 +519,7 @@ namespace activeWindow
                     {
                         this.AppendLine("Warning:缺少中间模块,row "+ i);
                         isok = false;
-                    }                   
+                    }
 
                     if (flag == 5) 
                     {
@@ -565,11 +565,13 @@ namespace activeWindow
                 this.AppendLine("请选择1行用例，并且测试步骤字段不能为空");
                 return;
             }
+
             int row = selection.Row;
-            ArrayList tmp = itc.getSteps();
+            List<string> tmp = itc.getSteps();
             string s="";
             for (int i = 0; i < tmp.Count; i++)
                 s += (i+1)+","+tmp[i] + "\n";
+
             sheet.Cells[row, (int)DefaultTC.colName.STEP] = s.Trim();
 
             tmp = itc.getExpRsts();
@@ -581,7 +583,7 @@ namespace activeWindow
 
         }
 
-        private void button7_Click(object sender, EventArgs e)
+        public void bToTL_Click(object sender, EventArgs e)
         {
             if (!initTestcaseBox())
             {
@@ -590,30 +592,38 @@ namespace activeWindow
 
             Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
             int rows = sheet.UsedRange.Rows.Count;
-
+            testlink tl = new testlink();
+            
             for (int i = 3; i < rows; i++)
             {
                 Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
                 Array values = (Array)tmprange.Cells.Value2;
-                Object c1 = values.GetValue(1, 1);
-                Object c2 = values.GetValue(1, 2);
-                string parent = "";
-                if (c1 != null)
+                object o = values.GetValue(1, 1);
+                if (o == null)
                 {
-                    parent = c1.ToString();
-                    continue;
+                    this.AppendLine("stop on row "+i);
+                    break;
                 }
-                
-                if (c2 != null)
+                string c1 = o.ToString();                
+                int deep = c1.Split(new string[] { "_" }, StringSplitOptions.None).Length-1;                
+                if (deep == 4)
                 {
-                    continue;
+                    DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
+                    i=tl.addTestcases(sheet, itc, i);
                 }
-                    
-                }
+                else
+                {
+                    tl.addItems(deep, values.GetValue(1, 2).ToString(), c1);
+                }                
+            }
 
-            
+            //this.AppendLine("Save to "+tl.saveToFile(null));
+            Console.WriteLine("Save to " + tl.saveToFile(null));
         }
 
-    }    
+        private void bSplit_Click(object sender, EventArgs e)
+        {
 
+        }
+    }
 }
