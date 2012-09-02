@@ -54,9 +54,6 @@ namespace activeWindow
             this.bGenGroup = new System.Windows.Forms.Button();
             this.bGenTestcase = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.bSplit = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.bToTL = new System.Windows.Forms.Button();
@@ -87,6 +84,9 @@ namespace activeWindow
             this.btnDelHost = new System.Windows.Forms.Button();
             this.txtHostAdd = new System.Windows.Forms.TextBox();
             this.btnAddHost = new System.Windows.Forms.Button();
+            this.tabPageTestlink = new System.Windows.Forms.TabPage();
+            this.groupBox31 = new System.Windows.Forms.GroupBox();
+            this.rtbLog1 = new System.Windows.Forms.RichTextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -95,9 +95,24 @@ namespace activeWindow
             this.button4 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.bTL_SelFile = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.bTL_Import = new System.Windows.Forms.Button();
+            this.bTL_Save = new System.Windows.Forms.Button();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.bTL_Load = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPageScript.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -110,10 +125,15 @@ namespace activeWindow
             this.groupBox6.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox8.SuspendLayout();
+            this.tabPageTestlink.SuspendLayout();
+            this.groupBox31.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.groupBox10.SuspendLayout();
+            this.groupBox11.SuspendLayout();
+            this.groupBox12.SuspendLayout();
             this.SuspendLayout();
             // 
             // bGen
@@ -156,6 +176,7 @@ namespace activeWindow
             // 
             this.tabControl1.Controls.Add(this.tabPageScript);
             this.tabControl1.Controls.Add(this.tabPageStaf);
+            this.tabControl1.Controls.Add(this.tabPageTestlink);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(3, 1);
             this.tabControl1.Name = "tabControl1";
@@ -217,7 +238,7 @@ namespace activeWindow
             this.groupBox5.Controls.Add(this.bOpt);
             this.groupBox5.Location = new System.Drawing.Point(396, 8);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(132, 103);
+            this.groupBox5.Size = new System.Drawing.Size(140, 172);
             this.groupBox5.TabIndex = 7;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "脚本格式化";
@@ -359,9 +380,6 @@ namespace activeWindow
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label11);
-            this.groupBox2.Controls.Add(this.textBox4);
-            this.groupBox2.Controls.Add(this.bSplit);
             this.groupBox2.Controls.Add(this.textBox2);
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.bToTL);
@@ -379,33 +397,6 @@ namespace activeWindow
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "用例转换";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 124);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(71, 12);
-            this.label11.TabIndex = 13;
-            this.label11.Text = "拆分为(1/n)";
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(82, 121);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(42, 21);
-            this.textBox4.TabIndex = 12;
-            // 
-            // bSplit
-            // 
-            this.bSplit.Location = new System.Drawing.Point(130, 121);
-            this.bSplit.Name = "bSplit";
-            this.bSplit.Size = new System.Drawing.Size(45, 23);
-            this.bSplit.TabIndex = 11;
-            this.bSplit.Text = "Go";
-            this.bSplit.UseVisualStyleBackColor = true;
-            this.bSplit.Visible = false;
-            this.bSplit.Click += new System.EventHandler(this.bSplit_Click);
             // 
             // textBox2
             // 
@@ -732,6 +723,38 @@ namespace activeWindow
             this.btnAddHost.UseVisualStyleBackColor = true;
             this.btnAddHost.Click += new System.EventHandler(this.btnAddHost_Click);
             // 
+            // tabPageTestlink
+            // 
+            this.tabPageTestlink.Controls.Add(this.groupBox10);
+            this.tabPageTestlink.Controls.Add(this.groupBox31);
+            this.tabPageTestlink.Location = new System.Drawing.Point(4, 21);
+            this.tabPageTestlink.Name = "tabPageTestlink";
+            this.tabPageTestlink.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageTestlink.Size = new System.Drawing.Size(545, 338);
+            this.tabPageTestlink.TabIndex = 2;
+            this.tabPageTestlink.Text = "Testlink";
+            this.tabPageTestlink.UseVisualStyleBackColor = true;
+            // 
+            // groupBox31
+            // 
+            this.groupBox31.Controls.Add(this.rtbLog1);
+            this.groupBox31.Location = new System.Drawing.Point(2, 206);
+            this.groupBox31.Name = "groupBox31";
+            this.groupBox31.Size = new System.Drawing.Size(540, 129);
+            this.groupBox31.TabIndex = 3;
+            this.groupBox31.TabStop = false;
+            this.groupBox31.Text = "Log";
+            // 
+            // rtbLog1
+            // 
+            this.rtbLog1.BackColor = System.Drawing.SystemColors.InactiveCaptionText;
+            this.rtbLog1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbLog1.Location = new System.Drawing.Point(3, 17);
+            this.rtbLog1.Name = "rtbLog1";
+            this.rtbLog1.Size = new System.Drawing.Size(533, 125);
+            this.rtbLog1.TabIndex = 2;
+            this.rtbLog1.Text = "";
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.splitContainer1);
@@ -815,16 +838,6 @@ namespace activeWindow
             this.treeView1.Size = new System.Drawing.Size(118, 330);
             this.treeView1.TabIndex = 0;
             // 
-            // tabPage3
-            // 
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(545, 337);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "文件管理";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
             // tabPage4
             // 
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
@@ -834,6 +847,155 @@ namespace activeWindow
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "IPOM";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.groupBox12);
+            this.groupBox10.Controls.Add(this.groupBox11);
+            this.groupBox10.Controls.Add(this.bTL_Save);
+            this.groupBox10.Controls.Add(this.bTL_Import);
+            this.groupBox10.Location = new System.Drawing.Point(5, 3);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(532, 194);
+            this.groupBox10.TabIndex = 4;
+            this.groupBox10.TabStop = false;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(6, 20);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(100, 21);
+            this.textBox4.TabIndex = 1;
+            // 
+            // bTL_SelFile
+            // 
+            this.bTL_SelFile.Location = new System.Drawing.Point(112, 18);
+            this.bTL_SelFile.Name = "bTL_SelFile";
+            this.bTL_SelFile.Size = new System.Drawing.Size(40, 23);
+            this.bTL_SelFile.TabIndex = 2;
+            this.bTL_SelFile.Text = "选择";
+            this.bTL_SelFile.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(4, 47);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(41, 12);
+            this.label12.TabIndex = 3;
+            this.label12.Text = "用户名";
+            // 
+            // textBox5
+            // 
+            this.textBox5.Location = new System.Drawing.Point(51, 44);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(88, 21);
+            this.textBox5.TabIndex = 4;
+            // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(301, 17);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(207, 21);
+            this.textBox6.TabIndex = 5;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(248, 20);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(47, 12);
+            this.label13.TabIndex = 6;
+            this.label13.Text = "API_KEY";
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(51, 17);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(191, 21);
+            this.textBox7.TabIndex = 7;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(10, 20);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(23, 12);
+            this.label14.TabIndex = 8;
+            this.label14.Text = "URL";
+            // 
+            // bTL_Import
+            // 
+            this.bTL_Import.Location = new System.Drawing.Point(344, 152);
+            this.bTL_Import.Name = "bTL_Import";
+            this.bTL_Import.Size = new System.Drawing.Size(89, 23);
+            this.bTL_Import.TabIndex = 9;
+            this.bTL_Import.Text = "用例导入";
+            this.bTL_Import.UseVisualStyleBackColor = true;
+            // 
+            // bTL_Save
+            // 
+            this.bTL_Save.Location = new System.Drawing.Point(439, 152);
+            this.bTL_Save.Name = "bTL_Save";
+            this.bTL_Save.Size = new System.Drawing.Size(75, 23);
+            this.bTL_Save.TabIndex = 10;
+            this.bTL_Save.Text = "保存配置";
+            this.bTL_Save.UseVisualStyleBackColor = true;
+            // 
+            // groupBox11
+            // 
+            this.groupBox11.Controls.Add(this.textBox4);
+            this.groupBox11.Controls.Add(this.bTL_SelFile);
+            this.groupBox11.Location = new System.Drawing.Point(6, 104);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(160, 51);
+            this.groupBox11.TabIndex = 11;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "用例";
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Controls.Add(this.comboBox1);
+            this.groupBox12.Controls.Add(this.bTL_Load);
+            this.groupBox12.Controls.Add(this.label11);
+            this.groupBox12.Controls.Add(this.textBox7);
+            this.groupBox12.Controls.Add(this.label14);
+            this.groupBox12.Controls.Add(this.label12);
+            this.groupBox12.Controls.Add(this.textBox5);
+            this.groupBox12.Controls.Add(this.textBox6);
+            this.groupBox12.Controls.Add(this.label13);
+            this.groupBox12.Location = new System.Drawing.Point(6, 20);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(520, 78);
+            this.groupBox12.TabIndex = 12;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "配置";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(292, 45);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(53, 12);
+            this.label11.TabIndex = 9;
+            this.label11.Text = "Projects";
+            // 
+            // bTL_Load
+            // 
+            this.bTL_Load.Location = new System.Drawing.Point(462, 40);
+            this.bTL_Load.Name = "bTL_Load";
+            this.bTL_Load.Size = new System.Drawing.Size(46, 23);
+            this.bTL_Load.TabIndex = 11;
+            this.bTL_Load.Text = "Load";
+            this.bTL_Load.UseVisualStyleBackColor = true;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(351, 43);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(105, 20);
+            this.comboBox1.TabIndex = 12;
             // 
             // TCAssistant
             // 
@@ -869,10 +1031,17 @@ namespace activeWindow
             this.groupBox7.PerformLayout();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            this.tabPageTestlink.ResumeLayout(false);
+            this.groupBox31.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
+            this.groupBox12.ResumeLayout(false);
+            this.groupBox12.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -889,7 +1058,7 @@ namespace activeWindow
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.RichTextBox rtbLog;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPageTestlink;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox tbTestcase;
         private System.Windows.Forms.Label label2;
@@ -945,8 +1114,23 @@ namespace activeWindow
         private System.Windows.Forms.Button bToTL;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button bSplit;
-        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.GroupBox groupBox31;
+        private System.Windows.Forms.RichTextBox rtbLog1;
+        private System.Windows.Forms.GroupBox groupBox10;
         private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.Button bTL_SelFile;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.Button bTL_Save;
+        private System.Windows.Forms.Button bTL_Import;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Button bTL_Load;
+        private System.Windows.Forms.Label label11;
     }
 }

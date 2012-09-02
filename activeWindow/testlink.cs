@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Configuration;
 
 namespace activeWindow
 {
@@ -10,26 +11,20 @@ namespace activeWindow
         testsuite[] tree = new testsuite[5];
         uint externalid = 0;
         uint[] node_order = new uint[5];
-        private static testsuite template;
-
-        public static testcase newTestcase()
-        {
-            return new testcase();
-        }
-
-        public static testsuite newTestsuite()
-        {
-            return new testsuite();
-        }
+        Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+        string apikey;
+        string uri;
         public testlink()
         {   
             tree[0] = new testsuite();
-            template = testsuite.LoadFromFile(Environment.CurrentDirectory + "\\template.xml");
-          }
+            apikey = ConfigurationManager.AppSettings["tl_apikey"];
+            uri = ConfigurationManager.AppSettings["tl_xmlrpc_url"];
+        //  testsuite template = testsuite.LoadFromFile(Environment.CurrentDirectory + "\\template.xml");
+        }
 
         public testsuite addItems(int deep, string id, string summary)
         {
-            testsuite ts = newTestsuite();
+            testsuite ts = new testsuite();
             ts.name = id;
             ts.details = summary;
             ts.node_order = ++node_order[deep];
@@ -83,7 +78,7 @@ namespace activeWindow
                 }
 
                 string c2 = itc.GetSubCase(row,DefaultTC.subColName.SAMPLES);
-                testcase tc = newTestcase();
+                testcase tc = new testcase();
                 tc.name = c1;                
                 tc.externalid = externalid++;
                 tc.internalid = externalid+"";

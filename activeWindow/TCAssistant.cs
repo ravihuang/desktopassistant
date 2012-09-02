@@ -620,10 +620,6 @@ namespace activeWindow
             //this.AppendLine("Save to "+tl.saveToFile(null));
             Console.WriteLine("Save to " + tl.saveToFile(null));
         }
-
-        private void bSplit_Click(object sender, EventArgs e)
-        {
-
-        }
+         
     }
 }
