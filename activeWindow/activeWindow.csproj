@@ -17,7 +17,7 @@
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>da</RootNamespace>
     <StartupObject>activeWindow.Application</StartupObject>
     <FileUpgradeFlags>

@@ -209,10 +209,17 @@ namespace activeWindow
             try
             {
                 string xmlString = Serialize();
-                System.IO.FileInfo xmlFile = new System.IO.FileInfo(fileName);
-                streamWriter = xmlFile.CreateText();
+                //System.IO.FileInfo xmlFile = new System.IO.FileInfo(fileName);
+                //streamWriter = xmlFile.CreateText();
+                //´øBOMµÄUTF8
+                Encoding utf8=new UTF8Encoding(true);
+                streamWriter = new StreamWriter(fileName, false, utf8);
+                xmlString = utf8.GetString(utf8.GetBytes(xmlString));
                 streamWriter.WriteLine(xmlString);
                 streamWriter.Close();
+
+                
+
             }
             finally
             {

@@ -41,9 +41,19 @@ namespace activeWindow
         public string saveToFile(string path)
         {
             if (path == null || path.Length == 0)
-                path = Environment.CurrentDirectory + "\\new_all_testsuites.xml";
+                path = Environment.CurrentDirectory;
+            testsuite ts = tree[0];
+            List<object> items = ts.Items;
             
-            tree[0].SaveToFile(path);
+            for (int i = 0; i < items.Count; i++)
+            {
+                ts.Items = new List<object>();
+                string name=((testsuite)items[i]).name;
+                ts.Items.Add(items[i]);
+                name=name.Replace("/","").Replace("\\", "");
+                Console.WriteLine(name);
+                ts.SaveToFile(path + "/" + i + "_" + name + ".xml");
+            }
             return path;
         }
 
@@ -87,7 +97,9 @@ namespace activeWindow
                 tc.summary = c2;
                 tc.preconditions = preset;
                 tc.execution_type = (uint)(can_auto ? 2 : 1);
-                tc.importance = Convert.ToUInt32(importance.Substring(5,1));
+                if (importance.Length>5)
+                    tc.importance = Convert.ToUInt32(importance.Substring(5,1));
+                else tc.importance = 1;
                 custom_field test_type=new custom_field();
                 test_type.name="test_type";
                 test_type.value=testtype;
@@ -110,7 +122,6 @@ namespace activeWindow
 
                 ts.Items.Add(tc);                
             }
-
-        }
+        }        
     }
 }

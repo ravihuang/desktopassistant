@@ -502,7 +502,8 @@ namespace activeWindow
 
                     int flag = c1.ToString().Split(new string[] { "_" }, StringSplitOptions.None).Length;
 
-                    if (flag > 5) {
+                    if (flag > 5) 
+                    {
                         this.AppendLine("Warning:²ã¼¶´ó¹ý5,row " + i);
                         isok = false;
                         
@@ -580,7 +581,6 @@ namespace activeWindow
                 s += (i + 1) + "," + tmp[i] + "\n";
 
             sheet.Cells[row, (int)DefaultTC.colName.EXP_RESULT] = s.Trim();
-
         }
 
         public void bToTL_Click(object sender, EventArgs e)
@@ -589,7 +589,7 @@ namespace activeWindow
             {
                 return;
             }
-
+            bToTL.Enabled = false;
             Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
             int rows = sheet.UsedRange.Rows.Count;
             testlink tl = new testlink();
@@ -616,9 +616,10 @@ namespace activeWindow
                     tl.addItems(deep, values.GetValue(1, 2).ToString(), c1);
                 }                
             }
-
-            //this.AppendLine("Save to "+tl.saveToFile(null));
-            Console.WriteLine("Save to " + tl.saveToFile(null));
+            
+            this.AppendLine("Save to " + tl.saveToFile(tbXML.Text));
+            //Console.WriteLine("Save to " + tl.saveToFile(tbXML.Text));
+            bToTL.Enabled = true;
         }
          
     }
