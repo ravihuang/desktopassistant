@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Configuration;
-using Excel;
+using Excel = Microsoft.Office.Interop.Excel;
 using System.Collections;
 namespace activeWindow
 {
@@ -271,19 +271,19 @@ namespace activeWindow
             }            
             itc.insertCases(sheet, selection.Row, int.Parse(cbDeep.Items[cbDeep.SelectedIndex].ToString()));
 
-            bGenTestcase.Enabled = true;
-               
+            bGenTestcase.Enabled = true;               
         }
+
         private int getGroupId(Excel.Worksheet sheet,int row) {
             if (row < 2) {
                 return -1;
             }
-            object rng0 = ((Range)sheet.Cells[row + 1, 1]).Value2;
+            object rng0 = ((Excel.Range)sheet.Cells[row + 1, 1]).Value2;
            
             string s = "";
             if (rng0 == null)
             {
-                object rng1 = ((Range)sheet.Cells[row + 1, 2]).Value2;
+                object rng1 = ((Excel.Range)sheet.Cells[row + 1, 2]).Value2;
                 if (rng1 == null)
                     return -1;
                 s = rng1.ToString();
@@ -296,16 +296,16 @@ namespace activeWindow
             return s.Split(new string[] { "_", "-" }, StringSplitOptions.None).Length;
         }
 
-        public void rangeToGrout(Excel.Worksheet sheet,int from,int to) {
-            Range range = sheet.get_Range(sheet.Cells[from+2, 1], sheet.Cells[to+1, 1]);
+        public void rangeToGroup(Excel.Worksheet sheet,int from,int to) {
+            Excel.Range range = sheet.get_Range(sheet.Cells[from + 2, 1], sheet.Cells[to + 1, 1]);
             this.AppendLine("group from " + (from + 2) + " to " + (to + 1)); 
-            range.Rows.Group(Type.Missing, Type.Missing, Type.Missing, Type.Missing);
-            
+            range.Rows.Group(Type.Missing, Type.Missing, Type.Missing, Type.Missing);            
         }
+
         private void bGroup_Click(object sender, EventArgs e)
         {           
 
-            if (!initTestcaseBox())            
+            if (!initTestcaseBox())
             {                
                 return;
             }
@@ -336,14 +336,16 @@ namespace activeWindow
                 {
                     used=i+1;                             
                     break;
-                }                
+                }
             }
-             Range range = sheet.get_Range(sheet.Cells[1, 1], sheet.Cells[used, 1]);
+             Excel.Range range = sheet.get_Range(sheet.Cells[1, 1], sheet.Cells[used, 1]);
              range.Rows.Select();
              try
              {
                  range.Rows.Ungroup();
-             }catch(Exception ex){}
+             }catch(Exception ex)
+             {
+             }
 
             int begin=-1;
             Boolean start = false;
@@ -367,7 +369,7 @@ namespace activeWindow
                         else
                         {
                             //this.Append("a:");                        
-                            rangeToGrout(sheet, begin, curpos);
+                            rangeToGroup(sheet, begin, curpos);
                         }
                         begin = j;
                         curpos = j;
@@ -379,7 +381,7 @@ namespace activeWindow
                         if (begin != curpos)
                         {
                             //this.Append("b:");
-                            rangeToGrout(sheet, begin, curpos);                            
+                            rangeToGroup(sheet, begin, curpos);                            
                         }
                         start = false;
                         begin = -1;
@@ -387,7 +389,7 @@ namespace activeWindow
                     if (j == used - 1 && start)
                     {
                         //this.Append("c:");
-                        rangeToGrout(sheet, begin, used-1);
+                        rangeToGroup(sheet, begin, used-1);
                         begin = -1;
                         start = false;
                     }
@@ -415,7 +417,7 @@ namespace activeWindow
             {
                 
                 int rows = sheet.UsedRange.Rows.Count;
-                Range range = sheet.get_Range(sheet.Cells[1, 1], sheet.Cells[rows, 1]);
+                Excel.Range range = sheet.get_Range(sheet.Cells[1, 1], sheet.Cells[rows, 1]);
                 range.Rows.Select();
                 int i =10;
                 while(i-->0)
@@ -448,7 +450,7 @@ namespace activeWindow
             {
                 int rows = sheet.UsedRange.Rows.Count;
                 for (int i = rows; i > 1; i--) {
-                    Range tmprange = sheet.Range["A" +i, Type.Missing].EntireRow;
+                    Excel.Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
                     Array values = (Array)tmprange.Cells.Value2;
 
                     Object c1 = values.GetValue(1, 1);
@@ -480,7 +482,7 @@ namespace activeWindow
                 bool isok = true;
                 for (int i = 3; i <rows; i++)
                 {
-                    Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
+                    Excel.Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
                     Array values = (Array)tmprange.Cells.Value2;
                     Object c1 = values.GetValue(1, 1);
                     Object c2 = values.GetValue(1, 2);
@@ -592,11 +594,11 @@ namespace activeWindow
             bToTL.Enabled = false;
             Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
             int rows = sheet.UsedRange.Rows.Count;
-            testlink tl = new testlink();
+            testlink tl = new testlink(this);
             
             for (int i = 3; i < rows; i++)
             {
-                Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
+                Excel.Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
                 Array values = (Array)tmprange.Cells.Value2;
                 object o = values.GetValue(1, 1);
                 if (o == null)
@@ -616,10 +618,15 @@ namespace activeWindow
                     tl.addItems(deep, values.GetValue(1, 2).ToString(), c1);
                 }                
             }
-            
-            this.AppendLine("Save to " + tl.saveToFile(tbXML.Text));
+            tl.saveToFile(tbXML.Text);
+            this.AppendLine("End£¡");
             //Console.WriteLine("Save to " + tl.saveToFile(tbXML.Text));
             bToTL.Enabled = true;
+        }
+
+        private void bTL_Import_Click(object sender, EventArgs e)
+        {
+
         }
          
     }

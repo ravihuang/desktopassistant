@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
-using Word;
+using Word = Microsoft.Office.Interop.Word;
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
@@ -14,7 +14,7 @@ namespace activeWindow
         [STAThread]
         public static void Main4()
         {
-            testlink tl = new testlink();
+            testlink tl = new testlink(null);
             //testlink.saveToFile(tl.getTestsuite(), "");
            // ts.Items.Add();
             //StreamReader str = new StreamReader(@"F:\vs\all_testsuites_u8.xml");
@@ -101,16 +101,16 @@ namespace activeWindow
                     
                     foreach (Word.Revision r in s.Range.Revisions)
                     {
-                        object row = r.Range.get_Information(WdInformation.wdFirstCharacterLineNumber);
-                        object col = r.Range.get_Information(WdInformation.wdFirstCharacterColumnNumber);
-                        object page = r.Range.get_Information(WdInformation.wdActiveEndPageNumber);
+                        object row = r.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+                        object col = r.Range.get_Information(Word.WdInformation.wdFirstCharacterColumnNumber);
+                        object page = r.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
                         System.Console.WriteLine("in " + page + " " + row + " " + col+" ");
                         Console.WriteLine("\t" + printType(r.Type)+"/"+r.Range.Text); 
                        // r.Reject();
                     }
                 }
 
-                foreach (Comment wordComment in aDoc.Comments)
+                foreach (Word.Comment wordComment in aDoc.Comments)
                 {
                     System.Console.WriteLine("Comment: "+wordComment.Range.Text);
                 }
@@ -126,36 +126,36 @@ namespace activeWindow
             System.Console.ReadLine();
         }
 
-        public static string printType(WdRevisionType type)
+        public static string printType(Word.WdRevisionType type)
         {
             switch (type) {
-                case WdRevisionType.wdNoRevision:
+                case Word.WdRevisionType.wdNoRevision:
                     return "No revision";
-                case WdRevisionType.wdRevisionConflict:
+                case Word.WdRevisionType.wdRevisionConflict:
                     return "Revision marked as a conflict";
-                case WdRevisionType.wdRevisionDelete:
+                case Word.WdRevisionType.wdRevisionDelete:
                     return "Deletion";
-                case WdRevisionType.wdRevisionDisplayField:
+                case Word.WdRevisionType.wdRevisionDisplayField:
                     return "Field display changed";
-                case WdRevisionType.wdRevisionInsert:
+                case Word.WdRevisionType.wdRevisionInsert:
                     return "Insertion";
-                case WdRevisionType.wdRevisionParagraphNumber:
+                case Word.WdRevisionType.wdRevisionParagraphNumber:
                     return "Paragraph number changed";
-                case WdRevisionType.wdRevisionParagraphProperty:
+                case Word.WdRevisionType.wdRevisionParagraphProperty:
                     return "Paragraph property changed";
-                case WdRevisionType.wdRevisionProperty:
+                case Word.WdRevisionType.wdRevisionProperty:
                     return "Property changed";
-                case WdRevisionType.wdRevisionReconcile:
+                case Word.WdRevisionType.wdRevisionReconcile:
                     return "Revision marked as reconciled conflict";
-                case WdRevisionType.wdRevisionReplace:
+                case Word.WdRevisionType.wdRevisionReplace:
                     return "Replaced";
-                case WdRevisionType.wdRevisionSectionProperty:
+                case Word.WdRevisionType.wdRevisionSectionProperty:
                     return "Section property changed";
-                case WdRevisionType.wdRevisionStyle:
+                case Word.WdRevisionType.wdRevisionStyle:
                     return "Style changed";
-                case WdRevisionType.wdRevisionStyleDefinition:
+                case Word.WdRevisionType.wdRevisionStyleDefinition:
                     return "Style definition changed";
-                case WdRevisionType.wdRevisionTableProperty:
+                case Word.WdRevisionType.wdRevisionTableProperty:
                     return "Table property changed";
                 //case WdRevisionType.wdRevisionCellDeletion:
                 //    return "Table cell deleted";

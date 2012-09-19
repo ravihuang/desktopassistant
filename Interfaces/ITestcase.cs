@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
+using Excel=Microsoft.Office.Interop.Excel;
 
 namespace activeWindow
 {

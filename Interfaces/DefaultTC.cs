@@ -7,7 +7,7 @@ using System.Data;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Configuration;
-using Excel;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace activeWindow
 {
@@ -61,7 +61,7 @@ namespace activeWindow
             return cells[(int)colName.CAN_AUTO].ToLower() == "true";
         }
         
-        protected string GetCellValue(Worksheet sheet,string cell){
+        protected string GetCellValue(Excel.Worksheet sheet,string cell){
             object value=sheet.get_Range(cell, Type.Missing).Value2;
             if (value == null)
                 return "";
@@ -71,7 +71,7 @@ namespace activeWindow
         {           
             return GetCellValue(sheet,cell);
         }
-        public void walkSubItemTestCase(Worksheet sheet, int row)
+        public void walkSubItemTestCase(Excel.Worksheet sheet, int row)
         {
             testcases = new List<string>();
             testcase_samples = new List<string>(); 
@@ -107,14 +107,14 @@ namespace activeWindow
             if(testcases.Count==0)
                 logger.AppendLine("Warn:没有生成用例，Row" + row);
         }
-        
-        public bool InitialTestcase(Worksheet sheet, int row)
+
+        public bool InitialTestcase(Excel.Worksheet sheet, int row)
         {
             if (row <= 2) {
                 return false;
             }
             this.sheet = sheet;
-            Range range = sheet.get_Range("A" + row, "Z" + row);
+            Excel.Range range = sheet.get_Range("A" + row, "Z" + row);
             Array values = (Array)range.Cells.Value2;
 
             for (int i = 1; i < cells.Length; i++)
@@ -151,10 +151,10 @@ namespace activeWindow
 
             return false;
         }
-        
-        public Boolean insertCases(Worksheet sheet, int row,int deep)
+
+        public Boolean insertCases(Excel.Worksheet sheet, int row, int deep)
         {
-            Range range = sheet.Range["A"+row,Type.Missing].EntireRow;
+            Excel.Range range = sheet.Range["A" + row, Type.Missing].EntireRow;
             
             Array values = (System.Array)range.Cells.Value2;
             string paras = values.GetValue(1, (int)colName.CASE_VAR).ToString();
@@ -195,7 +195,7 @@ namespace activeWindow
             ArrayList ll = Pairwise.go(pvlist, Math.Min(deep, pvlist.Count));
             ll.TrimToSize();
             //Range tmprange = sheet.get_Range("A" + (row + 1), "Z" + (row + 1));
-            Range tmprange = sheet.Range["A" + (row + 1), Type.Missing].EntireRow;
+            Excel.Range tmprange = sheet.Range["A" + (row + 1), Type.Missing].EntireRow;
             for (int i = 0; i < ll.Count; i++)
             {
                 tmprange.Insert(Excel.XlInsertShiftDirection.xlShiftDown, Type.Missing);

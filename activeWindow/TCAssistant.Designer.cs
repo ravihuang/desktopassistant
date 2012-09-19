@@ -176,6 +176,7 @@ namespace activeWindow
             // 
             this.tabControl1.Controls.Add(this.tabPageScript);
             this.tabControl1.Controls.Add(this.tabPageStaf);
+            this.tabControl1.Controls.Add(this.tabPageTestlink);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(3, 1);
             this.tabControl1.Name = "tabControl1";
@@ -885,6 +886,7 @@ namespace activeWindow
             this.bTL_Import.TabIndex = 9;
             this.bTL_Import.Text = "”√¿˝µº»Î";
             this.bTL_Import.UseVisualStyleBackColor = true;
+            this.bTL_Import.Click += new System.EventHandler(this.bTL_Import_Click);
             // 
             // groupBox31
             // 

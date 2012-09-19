@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.Configuration;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace activeWindow
 {
@@ -14,8 +15,10 @@ namespace activeWindow
         Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         string apikey;
         string uri;
-        public testlink()
-        {   
+        ILog log;
+        public testlink(ILog log)
+        {
+            this.log = log;
             tree[0] = new testsuite();
             apikey = ConfigurationManager.AppSettings["tl_apikey"];
             uri = ConfigurationManager.AppSettings["tl_xmlrpc_url"];
@@ -51,12 +54,26 @@ namespace activeWindow
                 string name=((testsuite)items[i]).name;
                 ts.Items.Add(items[i]);
                 name=name.Replace("/","").Replace("\\", "");
-                Console.WriteLine(name);
-                ts.SaveToFile(path + "/" + i + "_" + name + ".xml");
+                name = path + "/" + i + "_" + name + "_" + this.tc_cnt((testsuite)items[i]) + ".xml";
+                log.AppendLine(name);
+                ts.SaveToFile(name);
             }
             return path;
         }
-
+        public int tc_cnt(testsuite ts)
+        {
+            List<object> items=ts.Items;
+            int cnt=0;
+            for (int i = 0; i < items.Count; i++) {
+                if (items[i] is testsuite)
+                    cnt += tc_cnt((testsuite)items[i]);
+                else 
+                {
+                    cnt++;                
+                }
+            }
+            return cnt;
+        }
         public int addTestcases(Excel.Worksheet sheet,DefaultTC itc, int row)
         {
             itc.InitialTestcase(sheet, row);            
