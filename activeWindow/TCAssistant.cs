@@ -24,6 +24,7 @@ namespace activeWindow
          //   File.Delete("temp.txt");
             InitializeComponent();
             textBox1.Text = ConfigurationManager.AppSettings["save_path"];
+            tbXML.Text = ConfigurationManager.AppSettings["save_path"];
             showHelp = ConfigurationManager.AppSettings["show_help"] == "true";
             this.cbDeep.SelectedIndex = 1;
             this.cbOs.SelectedIndex = 0;
@@ -618,8 +619,9 @@ namespace activeWindow
                     tl.addItems(deep, values.GetValue(1, 2).ToString(), c1);
                 }                
             }
-            tl.saveToFile(tbXML.Text);
-            this.AppendLine("End£¡");
+            String name = app.ActiveWorkbook.Name.Split('.')[0].Trim();
+            tl.saveToFile(tbXML.Text, name);
+            this.AppendLine(name + " transform finished£¡");
             //Console.WriteLine("Save to " + tl.saveToFile(tbXML.Text));
             bToTL.Enabled = true;
         }

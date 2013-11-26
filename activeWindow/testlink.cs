@@ -41,25 +41,30 @@ namespace activeWindow
         }
 
         
-        public string saveToFile(string path)
+        public string saveToFile(string path,String name)
         {
             if (path == null || path.Length == 0)
                 path = Environment.CurrentDirectory;
             testsuite ts = tree[0];
             List<object> items = ts.Items;
-            
-            for (int i = 0; i < items.Count; i++)
-            {
-                ts.Items = new List<object>();
-                string name=((testsuite)items[i]).name;
-                ts.Items.Add(items[i]);
-                name=name.Replace("/","").Replace("\\", "");
-                name = path + "/" + i + "_" + name + "_" + this.tc_cnt((testsuite)items[i]) + ".xml";
-                log.AppendLine(name);
-                ts.SaveToFile(name);
-            }
+
+            //save to one file
+            ts.SaveToFile(path + "/" + name + "_" + this.tc_cnt(ts) + ".xml");
+
+            //save to many files
+            //for (int i = 0; i < items.Count; i++)
+            //{
+            //    ts.Items = new List<object>();
+            //    string name=((testsuite)items[i]).name;
+            //    ts.Items.Add(items[i]);
+            //    name=name.Replace("/","").Replace("\\", "");
+            //    name = path + "/" + i + "_" + name + "_" + this.tc_cnt((testsuite)items[i]) + ".xml";
+            //    log.AppendLine(name);
+            //    ts.SaveToFile(name);
+            //}
             return path;
         }
+
         public int tc_cnt(testsuite ts)
         {
             List<object> items=ts.Items;
