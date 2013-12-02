@@ -10,7 +10,7 @@ namespace activeWindow
     class testlink
     {   
         testsuite[] tree = new testsuite[5];
-        uint externalid = 0;
+        uint externalid = 1;
         uint[] node_order = new uint[5];
         Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         string apikey;
