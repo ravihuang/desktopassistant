@@ -12,38 +12,40 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Collections;
 namespace activeWindow
 {
-    public partial class TCAssistant : Form,ILog
+    public partial class TCAssistant : Form, ILog
     {
-        
+
         Excel.Application app;
         bool showHelp = false;
         Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-        
+
         public TCAssistant()
         {
-         //   File.Delete("temp.txt");
+            //   File.Delete("temp.txt");
             InitializeComponent();
             textBox1.Text = ConfigurationManager.AppSettings["save_path"];
             tbXML.Text = ConfigurationManager.AppSettings["save_path"];
             showHelp = ConfigurationManager.AppSettings["show_help"] == "true";
             this.cbDeep.SelectedIndex = 1;
-            this.cbOs.SelectedIndex = 0;
             initTestcaseBox();
 
             foreach (string tc in PluginBroker.List(typeof(ITestcase)))
             {
                 this.cbScriptType.Items.Add(PluginBroker.Load(tc, typeof(ITestcase)));
             }
-            this.cbScriptType.SelectedIndex = 0;
+            if (this.cbScriptType.Items.Count > 0)
+                this.cbScriptType.SelectedIndex = 0;
         }
-        
-        public void saveConfig(String key,String value) {
+
+        public void saveConfig(String key, String value)
+        {
             config.AppSettings.Settings.Remove("key");
             config.AppSettings.Settings.Add("key", value);
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
         }
-        private Boolean createDir(String path) {
+        private Boolean createDir(String path)
+        {
             DirectoryInfo dir = new DirectoryInfo(path);
 
             if (dir.Exists)
@@ -56,26 +58,28 @@ namespace activeWindow
                                   MessageBoxButtons.OKCancel,
                                   MessageBoxIcon.Asterisk))
                 {
-                    this.AppendLine("生成文件夹"+path);
+                    this.AppendLine("生成文件夹" + path);
                     dir.Create();
                     return true;
-                }                    
-                
+                }
+
             }
             catch (IOException ex)
             {
-                MessageBox.Show("所选子目录非法：" + path);                      
+                MessageBox.Show("所选子目录非法：" + path);
             }
             return false;
-           
+
         }
-        private bool initTestcaseBox() {
+        private bool initTestcaseBox()
+        {
+            //System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+
             if (app == null)
             {
                 try
                 {
                     app = Marshal.GetActiveObject("Excel.Application") as Excel.Application;
-
                 }
                 catch (Exception ex)
                 {
@@ -84,27 +88,26 @@ namespace activeWindow
                 }
 
             }
-
-            if (app.ActiveWorkbook == null)
+            if (app == null || app.ActiveWorkbook == null)
             {
-               return false;
+                return false;
             }
-
             tbTestcase.Text = app.ActiveWorkbook.Name;
             return true;
-        
+
         }
+
         private void bGen_Click(object sender, EventArgs e)
         {
             bGen.Enabled = false;
-            
+
             if (!initTestcaseBox() || !createDir(textBox1.Text))
-            {                
+            {
                 bGen.Enabled = true;
                 return;
             }
 
-            Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;            
+            Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
 
             Excel.Range selection = app.Application.Selection as Excel.Range;
 
@@ -112,7 +115,7 @@ namespace activeWindow
             int cnt = 0;
             for (int i = 0; i < selection.Count; i++)
             {
-                int row=selection.Row + i;
+                int row = selection.Row + i;
                 if (!itc.InitialTestcase(sheet, row))
                 {
                     this.AppendLine("Line" + row + "不是用例");
@@ -125,44 +128,44 @@ namespace activeWindow
                                   MessageBoxIcon.Asterisk))
                 {
                     this.AppendLine("Line" + row + "不能自动化！");
-                    continue;                
+                    continue;
                 }
-                
+
                 String fname = System.IO.Path.Combine(textBox1.Text, itc.GetScriptName());
-                FileInfo fi = new FileInfo(fname);                
+                FileInfo fi = new FileInfo(fname);
 
                 if (fi.Exists)
-                {    
-                     DialogResult rst=MessageBox.Show(
-                                      "文件" + fi.FullName + "已经存在，是否覆盖?",
-                                      "注意！",
-                                      MessageBoxButtons.YesNoCancel,
-                                      MessageBoxIcon.Asterisk);
-                     if (DialogResult.Yes == rst)
-                     {
+                {
+                    DialogResult rst = MessageBox.Show(
+                                     "文件" + fi.FullName + "已经存在，是否覆盖?",
+                                     "注意！",
+                                     MessageBoxButtons.YesNoCancel,
+                                     MessageBoxIcon.Asterisk);
+                    if (DialogResult.Yes == rst)
+                    {
                         fi.Delete();
-                     }
-                     else if(DialogResult.No == rst)
-                     {
+                    }
+                    else if (DialogResult.No == rst)
+                    {
                         continue;
-                     }
-                     else if(DialogResult.Cancel == rst)
-                     {
-                         bGen.Enabled = true;
-                         return;
-                     }                
+                    }
+                    else if (DialogResult.Cancel == rst)
+                    {
+                        bGen.Enabled = true;
+                        return;
+                    }
                 }
-                UTF8Encoding utf8 = new UTF8Encoding(false,false);
+                UTF8Encoding utf8 = new UTF8Encoding(false, false);
                 itc.walkSubItemTestCase(sheet, selection.Row);
                 StreamWriter w = new StreamWriter(fi.Create(), Encoding.GetEncoding("GBK"));
                 w.WriteLine(itc.ToScript());
                 w.Flush();
                 w.Close();
-                this.AppendLine("生成脚本："+itc.GetScriptName());
+                this.AppendLine("生成脚本：" + itc.GetScriptName());
                 cnt++;
             }
             saveConfig("save_path", textBox1.Text);
-            if(cnt==0)
+            if (cnt == 0)
                 MessageBox.Show("请选择用例先！");
             bGen.Enabled = true;
         }
@@ -174,7 +177,7 @@ namespace activeWindow
             {
                 return;
             }
-            textBox3.Text = folderBrowserDialog1.SelectedPath;            
+            textBox3.Text = folderBrowserDialog1.SelectedPath;
         }
 
         #region ILog 成员
@@ -199,12 +202,12 @@ namespace activeWindow
 
         private void TCAssistant_FormClosed(object sender, FormClosedEventArgs e)
         {
-            config.Save(ConfigurationSaveMode.Modified); 
+            config.Save(ConfigurationSaveMode.Modified);
         }
 
         private void tbTestcase_MouseEnter(object sender, EventArgs e)
-        {            
-            if (initTestcaseBox()&&showHelp)
+        {
+            if (initTestcaseBox() && showHelp)
                 toolTip1.Show(tbTestcase.Text, (IWin32Window)sender);
         }
 
@@ -235,19 +238,7 @@ namespace activeWindow
                 this.TopMost = true;
             else
                 this.TopMost = false;
-            if (((TabControl)sender).SelectedTab.Text == "STAF" && !isloaded)
-            {                
-                isloaded = true;
-                if (Directory.Exists("C:\\STAF"))
-                {
-                    Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + ";C:\\STAF\\bin");
-                }
-
-                loadItemsToListBox("cfg\\HostList.txt", lstHostList);
-                txtCommand.Text = readText("cfg\\Command.txt");
-                txtCheckCondition.Text = readText("cfg\\CheckCondition.txt");
-            }
-        }        
+        }
 
         private void bGenTestcase_Click(object sender, EventArgs e)
         {
@@ -260,27 +251,30 @@ namespace activeWindow
             }
 
             Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
-            
+
             Excel.Range selection = app.Application.Selection as Excel.Range;
 
             DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
 
-            if (selection.Count != 1||!itc.InitialTestcase(sheet, selection.Row)) {
+            if (selection.Count != 1 || !itc.InitialTestcase(sheet, selection.Row))
+            {
                 this.AppendLine("请选择1行用例，并且测试步骤字段不能为空");
                 bGenTestcase.Enabled = true;
                 return;
-            }            
+            }
             itc.insertCases(sheet, selection.Row, int.Parse(cbDeep.Items[cbDeep.SelectedIndex].ToString()));
 
-            bGenTestcase.Enabled = true;               
+            bGenTestcase.Enabled = true;
         }
 
-        private int getGroupId(Excel.Worksheet sheet,int row) {
-            if (row < 2) {
+        private int getGroupId(Excel.Worksheet sheet, int row)
+        {
+            if (row < 2)
+            {
                 return -1;
             }
             object rng0 = ((Excel.Range)sheet.Cells[row + 1, 1]).Value2;
-           
+
             string s = "";
             if (rng0 == null)
             {
@@ -289,70 +283,76 @@ namespace activeWindow
                     return -1;
                 s = rng1.ToString();
             }
-            else {
+            else
+            {
                 s = rng0.ToString();
             }
-            if(s.Length==0)
+            if (s.Length == 0)
                 return -1;
             return s.Split(new string[] { "_", "-" }, StringSplitOptions.None).Length;
         }
 
-        public void rangeToGroup(Excel.Worksheet sheet,int from,int to) {
-            Excel.Range range = sheet.get_Range(sheet.Cells[from + 2, 1], sheet.Cells[to + 1, 1]);
-            this.AppendLine("group from " + (from + 2) + " to " + (to + 1)); 
-            range.Rows.Group(Type.Missing, Type.Missing, Type.Missing, Type.Missing);            
+        public void rangeToGroup(Excel.Worksheet sheet, int from, int to)
+        {
+            //Excel.Range range = sheet.get_Range(sheet.Cells[from + 2, 1], sheet.Cells[to + 1, 1]);
+            Excel.Range range = sheet.Range[sheet.Cells[from + 2, 1], sheet.Cells[to + 1, 1]];
+
+            this.AppendLine("group from " + (from + 2) + " to " + (to + 1));
+            range.Rows.Group(Type.Missing, Type.Missing, Type.Missing, Type.Missing);
         }
 
         private void bGroup_Click(object sender, EventArgs e)
-        {           
+        {
 
             if (!initTestcaseBox())
-            {                
+            {
                 return;
             }
- 
-            Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
-             int rows = sheet.UsedRange.Rows.Count;
-             int[] id = new int[rows];
-             int max_deep = 0;
-             int row_begin = -1;   
 
-             for (int i = 0; i < rows; i++)
-             {
-                 id[i] = getGroupId(sheet, i);
-                 if (id[i] > max_deep)
-                 {
-                     max_deep = id[i];
-                 }
-                 if (id[i] > -1 && row_begin == -1)
-                     row_begin = i;
-                 if (id[i] > 6)
-                     this.AppendLine("Warn:层级太多，row:" + i);
-             }
+            Excel.Worksheet sheet = (Excel.Worksheet)app.ActiveWorkbook.ActiveSheet;
+            int rows = sheet.UsedRange.Rows.Count;
+            int[] id = new int[rows];
+            int max_deep = 0;
+            int row_begin = -1;
 
-             int used = -1;         
-             for (int i = rows - 1; i > 0; i--)
+            for (int i = 0; i < rows; i++)
             {
-                if (id[i] > 0&& used < 0)
+                id[i] = getGroupId(sheet, i);
+                if (id[i] > max_deep)
                 {
-                    used=i+1;                             
+                    max_deep = id[i];
+                }
+                if (id[i] > -1 && row_begin == -1)
+                    row_begin = i;
+                if (id[i] > 6)
+                    this.AppendLine("Warn:层级太多，row:" + i);
+            }
+
+            int used = -1;
+            for (int i = rows - 1; i > 0; i--)
+            {
+                if (id[i] > 0 && used < 0)
+                {
+                    used = i + 1;
                     break;
                 }
             }
-             Excel.Range range = sheet.get_Range(sheet.Cells[1, 1], sheet.Cells[used, 1]);
-             range.Rows.Select();
-             try
-             {
-                 range.Rows.Ungroup();
-             }catch(Exception ex)
-             {
-             }
+            //Excel.Range range = sheet.get_Range(sheet.Cells[1, 1], sheet.Cells[used, 1]);
+            Excel.Range range = sheet.Range[sheet.Cells[1, 1], sheet.Cells[used, 1]];
+            range.Rows.Select();
+            try
+            {
+                range.Rows.Ungroup();
+            }
+            catch (Exception ex)
+            {
+            }
 
-            int begin=-1;
+            int begin = -1;
             Boolean start = false;
             int curpos = 0;
-           // int deep = max_deep-3;
-            for (int deep = max_deep; deep >1; deep--)
+            // int deep = max_deep-3;
+            for (int deep = max_deep; deep > 1; deep--)
             {
                 for (int j = 0; j < used; j++)
                 {
@@ -382,7 +382,7 @@ namespace activeWindow
                         if (begin != curpos)
                         {
                             //this.Append("b:");
-                            rangeToGroup(sheet, begin, curpos);                            
+                            rangeToGroup(sheet, begin, curpos);
                         }
                         start = false;
                         begin = -1;
@@ -390,14 +390,14 @@ namespace activeWindow
                     if (j == used - 1 && start)
                     {
                         //this.Append("c:");
-                        rangeToGroup(sheet, begin, used-1);
+                        rangeToGroup(sheet, begin, used - 1);
                         begin = -1;
                         start = false;
                     }
                     curpos = j;
                 }
-                
-            }             
+
+            }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -407,25 +407,27 @@ namespace activeWindow
         }
 
         private void bClrGrp_Click(object sender, EventArgs e)
-        {      
+        {
 
             if (!initTestcaseBox())
-            {               
+            {
                 return;
             }
             Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
             try
             {
-                
+
                 int rows = sheet.UsedRange.Rows.Count;
                 Excel.Range range = sheet.get_Range(sheet.Cells[1, 1], sheet.Cells[rows, 1]);
                 range.Rows.Select();
-                int i =10;
-                while(i-->0)
+                int i = 10;
+                while (i-- > 0)
                     range.Rows.Ungroup();
-                
-            }catch(Exception ex){
-               
+
+            }
+            catch (Exception ex)
+            {
+
 
             }
         }
@@ -450,7 +452,8 @@ namespace activeWindow
             try
             {
                 int rows = sheet.UsedRange.Rows.Count;
-                for (int i = rows; i > 1; i--) {
+                for (int i = rows; i > 1; i--)
+                {
                     Excel.Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
                     Array values = (Array)tmprange.Cells.Value2;
 
@@ -460,7 +463,7 @@ namespace activeWindow
                         continue;
                     if (c1 == null)
                         tmprange.Delete(Excel.XlDeleteShiftDirection.xlShiftUp);
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -474,14 +477,14 @@ namespace activeWindow
             {
                 return;
             }
-            
+
             Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
             try
             {
                 int rows = sheet.UsedRange.Rows.Count;
                 int curr_flag = 0;
                 bool isok = true;
-                for (int i = 3; i <rows; i++)
+                for (int i = 3; i < rows; i++)
                 {
                     Excel.Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
                     Array values = (Array)tmprange.Cells.Value2;
@@ -505,11 +508,11 @@ namespace activeWindow
 
                     int flag = c1.ToString().Split(new string[] { "_" }, StringSplitOptions.None).Length;
 
-                    if (flag > 5) 
+                    if (flag > 5)
                     {
                         this.AppendLine("Warning:层级大过5,row " + i);
                         isok = false;
-                        
+
                         continue;
                     }
 
@@ -518,28 +521,30 @@ namespace activeWindow
                         curr_flag = flag;
                         continue;
                     }
-                    
+
                     if ((flag - curr_flag) > 1)
                     {
-                        this.AppendLine("Warning:缺少中间模块,row "+ i);
+                        this.AppendLine("Warning:缺少中间模块,row " + i);
                         isok = false;
                     }
 
-                    if (flag == 5) 
+                    if (flag == 5)
                     {
-                        if (curr_flag == 5) {
-                            this.AppendLine("Warning:没有生产用例 row " + (i-1));
-                            isok = false; 
+                        if (curr_flag == 5)
+                        {
+                            this.AppendLine("Warning:没有生产用例 row " + (i - 1));
+                            isok = false;
                         }
                         DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
                         if (!itc.InitialTestcase(sheet, i))
-                        {                            
-                            isok = false;                            
-                        }else if(itc.getSteps().Count!=itc.getExpRsts().Count)
+                        {
+                            isok = false;
+                        }
+                        else if (itc.getSteps().Count != itc.getExpRsts().Count)
                         {
                             this.AppendLine("Warning:步骤和预期结果长度不一致 row " + i);
-                            isok = false;                            
-                        }                                                
+                            isok = false;
+                        }
                     }
                     curr_flag = flag;
                 }
@@ -572,9 +577,9 @@ namespace activeWindow
 
             int row = selection.Row;
             List<string> tmp = itc.getSteps();
-            string s="";
+            string s = "";
             for (int i = 0; i < tmp.Count; i++)
-                s += (i+1)+","+tmp[i] + "\n";
+                s += (i + 1) + "," + tmp[i] + "\n";
 
             sheet.Cells[row, (int)DefaultTC.colName.STEP] = s.Trim();
 
@@ -596,7 +601,7 @@ namespace activeWindow
             Excel.Worksheet sheet = app.ActiveWorkbook.ActiveSheet as Excel.Worksheet;
             int rows = sheet.UsedRange.Rows.Count;
             testlink tl = new testlink(this);
-            
+
             for (int i = 3; i < rows; i++)
             {
                 Excel.Range tmprange = sheet.Range["A" + i, Type.Missing].EntireRow;
@@ -604,20 +609,20 @@ namespace activeWindow
                 object o = values.GetValue(1, 1);
                 if (o == null)
                 {
-                    this.AppendLine("stop on row "+i);
+                    this.AppendLine("stop on row " + i);
                     break;
                 }
-                string c1 = o.ToString();                
-                int deep = c1.Split(new string[] { "_" }, StringSplitOptions.None).Length-1;                
+                string c1 = o.ToString();
+                int deep = c1.Split(new string[] { "_" }, StringSplitOptions.None).Length - 1;
                 if (deep == 4)
                 {
                     DefaultTC itc = (DefaultTC)this.cbScriptType.SelectedItem;
-                    i=tl.addTestcases(sheet, itc, i);
+                    i = tl.addTestcases(sheet, itc, i);
                 }
                 else
                 {
                     tl.addItems(deep, values.GetValue(1, 2).ToString(), c1);
-                }                
+                }
             }
             String name = app.ActiveWorkbook.Name.Split('.')[0].Trim();
             tl.saveToFile(tbXML.Text, name);
@@ -630,6 +635,6 @@ namespace activeWindow
         {
 
         }
-         
+
     }
 }

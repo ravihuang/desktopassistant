@@ -73,7 +73,7 @@ namespace activeWindow
             Console.Write("llll");
         }
         [STAThread]
-        static void Main2(string[] args)
+        /*static void Main2(string[] args)
         {
             Word.ApplicationClass WordApp = new Word.ApplicationClass();
 
@@ -124,7 +124,7 @@ namespace activeWindow
             } 
             
             System.Console.ReadLine();
-        }
+        }*/
 
         public static string printType(Word.WdRevisionType type)
         {

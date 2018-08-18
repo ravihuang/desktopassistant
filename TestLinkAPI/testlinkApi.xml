@@ -4,6 +4,717 @@
         <name>TestLinkAPI</name>
     </assembly>
     <members>
+        <member name="T:Meyn.TestLink.TestCaseResultStatus">
+            <summary>
+            represent the result of a test case execution
+            </summary>
+        </member>
+        <member name="T:Meyn.TestLink.ActionOnDuplicatedName">
+            <summary>
+            used for creating test cases to tell Testlink what to do if another test case is found with the same name
+            </summary>
+        </member>
+        <member name="T:Meyn.TestLink.TestLink">
+            <summary>
+            this is the proxy class to connect to TestLink.
+            It provides a list of functions that map straight into the Tstlink API as it stands at V 1.9.2
+            </summary>
+            <remarks>This class makes use of XML-RPC.NET Copyright (c) 2006 Charles Cook</remarks>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.#ctor(System.String,System.String)">
+            <summary>
+            default constructor 
+            </summary>
+            <param name="apiKey">developer key as provided by testlink</param>
+            <param name="url">url of testlink API. Something like http://localhost/testlink/lib/api/xmlrpc.php</param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.#ctor(System.String,System.String,System.Boolean)">
+            <summary>
+            constructor with URL and log flag
+            </summary>
+            <param name="apiKey">developer key as provided by testlink</param>
+            <param name="url">url of testlink API. Something like http://localhost/testlink/lib/api/xmlrpc.php </param>
+            <param name="log">enable capture of lastRequest and lastResponse for debugging</param>
+        </member>
+        <member name="P:Meyn.TestLink.TestLink.LastRequest">
+            <summary>
+            last xmlrpc request sent to testlink. only works if constructor was called with argument log set to true
+            </summary>
+        </member>
+        <member name="P:Meyn.TestLink.TestLink.LastResponse">
+            <summary>
+            debug last response reseved from testlink xmlrpc call. Only works if constructor was called with argument log set to true
+            </summary>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.handleErrorMessage(System.Object)">
+            <summary>
+             process the response object returned by the Tstlink API for error messages. 
+             if it finds one or more error messages it throws a TLINK Exception        ///  
+            </summary>
+            <param name="errorMessage">the actual message returned by testlink</param>
+            <returns>true if it found an error message that matches an errorCodes list
+            false if there were no errors</returns>returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.handleErrorMessage(System.Object,System.Int32[])">
+            <summary>
+             process the response object returned by the Tstlink API for error messages. 
+             if it finds one or more error messages it throws a TLINK Exception        ///  
+            </summary>
+            <param name="errorMessage">the actual message returned by testlink</param>
+            <returns>true if it found an error message that matches an errorCodes list
+            false if there were no errors</returns>returns>
+            <param name="exceptedErrorCodes">a list of integers that should not result in an exception to be processed</param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.handleErrorMessage(System.Object[],System.Int32[])">
+            <summary>
+             process the response object returned by the Tstlink API for error messages. 
+             if it finds one or more error messages it throws a TLINK Exception        ///  
+            </summary>
+            <param name="errorMessage">the actual message returned by testlink</param>
+            <returns>true if it found an error message that matches an errorCodes list
+            false if there were no errors</returns>returns>
+            <param name="exceptedErrorCodes">a list of integers that should not result in an exception to be processed</param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.decodeErrors(System.Object[])">
+            <summary>
+            internal. try to conver the struct to an error message. Return null if it wasn't one
+            </summary>
+            <param name="messageList"></param>
+            <returns>a TLErrorMessage or null</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.stateIsValid">
+            <summary>
+            check that the state of the interface 
+            </summary>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetBuildsForTestPlan(System.Int32)">
+            <summary>
+            get a list of all builds for a testplan
+            </summary>
+            <param name="testplanid">the id of the testplan</param>
+            <returns>a list (may be empty)</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.CreateBuild(System.Int32,System.String,System.String)">
+            <summary>
+            create a build for a testplan
+            </summary>
+            <param name="testplanid">id of the test plan</param>
+            <param name="buildname">name of the build</param>
+            <param name="buildnotes">notes</param>
+            <returns>General Result object</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetLatestBuildForTestPlan(System.Int32)">
+            <summary>
+            get the newest build for a test plan
+            </summary>
+            <param name="tplanid">id of testplan</param>
+            <returns>a build object</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.ReportTCResult(System.Int32,System.Int32,Meyn.TestLink.TestCaseResultStatus,System.Int32,System.String,System.Boolean,System.Boolean,System.String,System.Int32,System.Int32)">
+            <summary>
+            Record the outcome of a test case execution
+            </summary>
+            <param name="testcaseid">Id of test case</param>
+            <param name="testplanid">Id of test plan</param>
+            <param name="status">The result of the test (pass, fail or blocked)</param>
+            <param name="platformId">Id of the platform. Optional if platform name is given</param>
+            <param name="platformName">name of the platform. Optional if the platform id is given</param>
+            <param name="overwrite">if true, then last execution for (testcase,testplan,build,platform) will be overwritten.</param>
+            <param name="guess"> (assumed to be true) defining whether to guess optinal params or require them explicitly default is true</param>
+            <param name="notes">any notes or info to be added to the description field</param>
+            <param name="buildid">If not given, then highest build id willl be used</param>
+            <param name="bugid">Id for a bug if used in conjunction with a defect tracker</param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.UploadExecutionAttachment(System.Int32,System.String,System.String,System.Byte[],System.String,System.String)">
+            <summary>
+            Uploads an attachment for an execution. 
+            </summary>
+            <remarks>The attachment content must be Base64 encoded by the client before sending it.</remarks>
+            <param name="executionId"></param>
+            <param name="title">The title of the Attachment </param>
+            <param name="description">The description of the Attachment</param>
+            <param name="filename">The file name of the Attachment (e.g.:notes.txt)</param>
+            <param name="fileType">The file type of the Attachment (e.g.: text/plain)</param>
+            <param name="content">The content (Base64 encoded) of the Attachment</param>
+            <returns>An AttachmentRequestResponse</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetLastExecutionResult(System.Int32,System.Int32)">
+            <summary>
+            get the last execution result
+            </summary>
+            <param name="testplanid">id of the test plan</param>
+            <param name="testcaseid">id of test case</param>
+            <returns>a ExecutionResult or null</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.DeleteExecution(System.Int32)">
+            <summary>
+            delete an execution. Current status this API is not fully functioning as it is not clear how to configure testlink to allow this to happen
+            </summary>
+            <param name="executionid">the id of the test case execution</param>
+            <returns>a GeneralResult</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCase(System.Int32,System.Int32)">
+            <summary>
+            get a test case by its id
+            </summary>
+            <param name="testcaseid">Id of the test case</param>
+            <param name="versionId">(optional) the version id. If not given the latest version is returned</param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestSuite(System.Int32,System.Boolean)">
+            <summary>
+            get test cases contained in a test suite
+            </summary>
+            <param name="testSuiteid">id of the test suite</param>
+            <param name="deep">Set the deep flag to false if you only want test cases in the test suite provided and no child test cases.</param>
+            <returns>A list of Test Cases</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCaseIdsForTestSuite(System.Int32,System.Boolean)">
+            <summary>
+            get a list of testcase ids of test cases contained in a test suite
+            </summary>
+            <param name="testSuiteid">id of the test suite</param>
+            <param name="deep">Set the deep flag to false if you only want test cases in the test suite provided and no child test cases.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCaseIDByName(System.String,System.String)">
+            <summary>
+            ask for a test case by name. 
+            </summary>
+            <param name="testcasename">the name of the test case</param>
+            <param name="testsuitename">the name of the test suite</param>
+            <remarks>Searching is case sensitive.</remarks>
+            <returns>a list of test cases found</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCaseIDByName(System.String,System.Int32)">
+            <summary>
+            get a test cases by this name
+            </summary>
+            <param name="testcasename">name of the test case (case sensitive)</param>
+            <param name="testSuiteId">name of test suite</param>
+            <returns>a list containing zero to many test cases with that name that occur in the specific test suite</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCaseIDByName(System.String)">
+            <summary>
+            get a list of test case ids with this name. 
+            </summary>
+            <param name="testcasename">name of the test case (case sensitive)</param>
+            <returns>a list containing zero to many test case id objects with that name</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.CreateTestCase(System.String,System.Int32,System.String,System.Int32,System.String,System.String,System.Int32,System.Boolean,Meyn.TestLink.ActionOnDuplicatedName,System.Int32,System.Int32)">
+            <summary>
+            create a new Testcase without having to specify test steps
+            </summary>
+            <summary>
+            Create a new Test Case
+            </summary>
+            <param name="authorLogin">login id of test case author</param>
+            <param name="testsuiteid">Id of test suite</param>
+            <param name="testcasename">name of test case</param>
+            <param name="testprojectid">id of test project</param>
+            <param name="summary">summary of result</param>
+            <param name="keywords"></param>
+            <param name="order">defaultOrder = 0, otherwise location in sequence to other testcases</param>
+            <param name="checkduplicatedname">1=yes, 0=no</param>
+            <param name="actiononduplicatedname">one of block, generate_new, create_new_version</param>
+            <param name="executiontype">manual:1, automated: 2, </param>
+            <param name="importance">Importance of test case</param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.CreateTestCase(System.String,System.Int32,System.String,System.Int32,System.String,Meyn.TestLink.TestStep[],System.String,System.Int32,System.Boolean,Meyn.TestLink.ActionOnDuplicatedName,System.Int32,System.Int32)">
+            <summary>
+            Create a new Test Case
+            </summary>
+            <param name="authorLogin">login id of test case author</param>
+            <param name="testsuiteid">Id of test suite</param>
+            <param name="testcasename">name of test case</param>
+            <param name="testprojectid">id of test project</param>
+            <param name="summary">summary of result</param>
+            <param name="steps">Array of test steps</param>
+            <param name="keywords"></param>
+            <param name="order">defaultOrder = 0, otherwise location in sequence to other testcases</param>
+            <param name="checkduplicatedname">1=yes, 0=no</param>
+            <param name="actiononduplicatedname">one of block, generate_new, create_new_version</param>
+            <param name="executiontype">manual:1, automated: 2, </param>
+            <param name="importance">Importance of test case</param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.addTestCaseToTestPlan(System.Int32,System.Int32,System.String,System.Int32,System.Int32)">
+            <summary>
+            add a test case to a test plan (no way of removing one)
+            </summary>
+            <param name="testprojectid"></param>
+            <param name="testplanid"></param>
+            <param name="testcaseexternalid">the id that is displayed on the GUI</param>
+            <param name="version"></param>
+            <param name="platformid"></param>
+            <returns></returns>
+            <remarks>this testExternalid is a string and a concatenation of the 
+            test project prefix and the externalid that is reported in the test case creation.
+            </remarks>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.UploadTestCaseAttachment(System.Int32,System.String,System.String,System.Byte[],System.String,System.String)">
+            <summary>
+            upload an attachment for a test case
+            </summary>
+            <param name="testcaseid"></param>
+            <param name="filename"></param>
+            <param name="fileType"></param>
+            <param name="content"></param>
+            <param name="title"></param>
+            <param name="description"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCaseAttachments(System.Int32)">
+            <summary>
+            retrieve the attachments for a test case
+            </summary>
+            <param name="testCaseId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Int32,System.String)">
+            <summary>
+            get all test cases for a test plan .
+            </summary>
+            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
+            <param name="testplanid"></param>
+            <param name="testcaseid"></param>
+            <param name="buildid"></param>
+            <param name="keywordid"></param>
+            <param name="executed"></param>
+            <param name="assignedTo"></param>
+            <param name="executedstatus"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Int32)">
+            <summary>
+            get all test cases for a test plan .
+            </summary>
+            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
+            <param name="testplanid"></param>
+            <param name="testcaseid"></param>
+            <param name="buildid"></param>
+            <param name="keywordid"></param>
+            <param name="executed"></param>
+            <param name="assignedTo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            get all test cases for a test plan .
+            </summary>
+            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
+            <param name="testplanid"></param>
+            <param name="testcaseid"></param>
+            <param name="buildid"></param>
+            <param name="keywordid"></param>
+            <param name="executed"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get all test cases for a test plan .
+            </summary>
+            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
+            <param name="testplanid"></param>
+            <param name="testcaseid"></param>
+            <param name="buildid"></param>
+            <param name="keywordid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get all test cases for a test plan .
+            </summary>
+            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
+            <param name="testplanid"></param>
+            <param name="testcaseid"></param>
+            <param name="buildid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32)">
+            <summary>
+            get all test cases for a test plan .
+            </summary>
+            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
+            <param name="testplanid"></param>
+            <param name="testcaseid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32)">
+            <summary>
+            get all test cases for a test plan
+            </summary>
+            <param name="testplanid"></param>
+            <returns>List of test cases with test plan data added</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetProjectTestPlans(System.Int32)">
+            <summary>
+            get a list of all testplans for a project
+            </summary>
+            <param name="projectid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.getTestPlanByName(System.String,System.String)">
+            <summary>
+            get a test plan for a project
+            </summary>
+            <param name="projectname">the name of the owning project</param>
+            <param name="planName"></param>
+            <returns>a TestPlan or Null</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTotalsForTestPlan(System.Int32)">
+            <summary>
+            get totals for a testplan
+            </summary>
+            <param name="testplanid"></param>
+            <remarks>If a test plan has no executions to it you will still get a list iwth a single item. That item will have zeros in its totals</remarks>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestPlanPlatforms(System.Int32)">
+             <summary>
+             get a list of all platforms for a test plan.
+            
+             </summary>
+             <remarks>Throws an exception of type Testlink Exception</remarks>
+             <param name="testplanid"></param>
+             <returns>a list of testplan platforms</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.CreateTestPlan(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            create a new Testplan 
+            </summary>
+            <param name="testplanname">the name of the plan</param>
+            <param name="testProjectName">the name of the test project that contains the test plan</param>
+            <param name="notes"></param>
+            <param name="active">whether this plan is currently active</param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetProjects">
+            <summary>
+            get a list of all projects
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetProject(System.String)">
+            <summary>
+            get a single Project
+            </summary>
+            <param name="projectname"></param>
+            <returns>a Project or Null</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.UploadTestProjectAttachment(System.Int32,System.String,System.String,System.Byte[],System.String,System.String)">
+            <summary>
+            upload an attachment to a test project
+            </summary>
+            <param name="executionId"></param>
+            <param name="filename"></param>
+            <param name="fileType"></param>
+            <param name="content"></param>
+            <param name="title"></param>
+            <param name="description"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.CreateProject(System.String,System.String,System.String)">
+            <summary>
+            create a new project
+            </summary>
+            <param name="projectname"></param>
+            <param name="testcasePrefix">prefix for test case ids</param>
+            <param name="notes"></param>
+            <returns>a general result</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestSuitesForTestPlan(System.Int32)">
+            <summary>
+            get test suites for a test plan
+            </summary>
+            <param name="testplanid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetFirstLevelTestSuitesForTestProject(System.Int32)">
+            <summary>
+            get all top level test suites for a test project
+            </summary>
+            <param name="testprojectid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.GetTestSuiteById(System.Int32)">
+            <summary>
+            get a test suite by its id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.CreateTestSuite(System.Int32,System.String,System.String,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            create a new test suite
+            </summary>
+            <param name="testprojectid">id of test project</param>
+            <param name="testsuitename">Name of this test suite</param>
+            <param name="details"></param>
+            <param name="parentId">parent test suite id. Optional</param>
+            <param name="order">display order with sibling test suites. Optional</param>
+            <param name="checkduplicatedname">if true, throw an error of a duplicate name exists. Optional, default=true</param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.UploadTestSuiteAttachment(System.Int32,System.String,System.String,System.Byte[],System.String,System.String)">
+            <summary>
+            upload an attachment for a test case
+            </summary>
+            <param name="testsuiteid"></param>
+            <param name="filename"></param>
+            <param name="fileType"></param>
+            <param name="content"></param>
+            <param name="title"></param>
+            <param name="description"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.SayHello">
+            <summary>
+            basic Ping
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.about">
+            <summary>
+            Gets info about the API
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.checkDevKey(System.String)">
+            <summary>
+            check if Developer Key exists
+            </summary>
+            <param name="devkey"></param>
+            <returns>true if key exists</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLink.DoesUserExist(System.String)">
+            <summary>
+            check for user id to see whether it exists
+            </summary>
+            <param name="username"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Meyn.TestLink.ITestLink">
+            <summary>
+            the interface mapping required for the XmlRpc api of testlink. 
+            This interface is used by the TestLink class. 
+            </summary>
+            <remarks>This class makes use of XML-RPC.NET Copyright (c) 2006 Charles Cook</remarks>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.getTestCase(System.String,System.Int32)">
+            <summary>
+            get test case specification using external or internal id. returns last version
+            </summary>
+            <param name="devKey"></param>
+            <param name="testcaseid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.getTestCase(System.String,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="devKey"></param>
+            <param name="testcaseid"></param>
+            <param name="version"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.deleteExecution(System.String,System.Int32)">
+            <summary>
+            delete an execution
+            </summary>
+            <param name="devKey"></param>
+            <param name="executionid"></param>
+            <returns> mixed $resultInfo 
+            				[status]	=> true/false of success
+            				[id]		  => result id or error code
+            				[message]	=> optional message for error message string</returns>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.getTestPlanPlatforms(System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="devKey"></param>
+            <param name="testplanid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.getTotalsForTestPlan(System.String,System.Int32)">
+            <summary>
+            Gets the summarized results grouped by platform
+            </summary>
+            <param name="devKey"></param>
+            <param name="testplanid"></param>
+            <returns>map where every element has:
+            	 *
+            	 *	'type' => 'platform'
+            	 *	'total_tc => ZZ
+            	 *	'details' => array ( 'passed' => array( 'qty' => X)
+            	 *	                     'failed' => array( 'qty' => Y)
+            	 *	                     'blocked' => array( 'qty' => U)
+            	 *                       ....)</returns>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.sayHello">
+            <summary>
+            simple Ping.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.doesUserExist(System.String,System.String)">
+            <summary>
+            checks user exists
+            </summary>
+            <param name="devKey"></param>
+            <param name="user"></param>
+            <returns>true if everything OK, otherwise error structure</returns>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.checkDevKey(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="devKey"></param>
+            <returns>true if everything OK, otherwise error structure</returns>
+        </member>
+        <member name="M:Meyn.TestLink.ITestLink.getFullPath(System.String,System.Int32)">
+            <summary>
+            Gets full path from the given node till the top using nodes_hierarchy_table
+            </summary>
+            <param name="devKey"></param>
+            <param name="nodeID"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Meyn.TestLink.TestLinkAdaptor">
+            <summary>
+            encapsulates the basic comms to the TestLink API 
+            for the purpose of recording test results based upon the TestLinkFixtureAttribute 
+            information.
+            </summary>
+            <remarks>This class is used by test exporters for automated testing frameworks such as Gallio or NUnit</remarks>
+        </member>
+        <member name="F:Meyn.TestLink.TestLinkAdaptor.basicConnectionValid">
+            <summary>
+            can we talk to testlink
+            </summary>
+        </member>
+        <member name="F:Meyn.TestLink.TestLinkAdaptor.projectDataValid">
+            <summary>
+            do we have project plan, project id and test suite correct?
+            </summary>
+        </member>
+        <member name="P:Meyn.TestLink.TestLinkAdaptor.ConnectionValid">
+            <summary>
+            can we record test results
+            </summary>
+        </member>
+        <member name="F:Meyn.TestLink.TestLinkAdaptor.proxy">
+            <summary>
+            the proxy to the current server
+            </summary>
+        </member>
+        <member name="P:Meyn.TestLink.TestLinkAdaptor.ConnectionData">
+            <summary>
+            sets up connection and retrieves basic data
+            </summary>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkAdaptor.RecordTheResult(System.Int32,Meyn.TestLink.TestCaseResultStatus,System.String)">
+            <summary>
+            record a result with testlink;
+            </summary>
+            <param name="testCaseId"></param>
+            <param name="status"></param>
+            <param name="notes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkAdaptor.GetTestCaseId(System.String)">
+            <summary>
+            get a test case id. If the test case does not exist then create one
+            </summary>
+            <param name="testName"></param>       
+            <returns>a valid test case id or 0 in case of failure</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkAdaptor.getTestCaseByName(System.String,System.Int32)">
+            <summary>
+            get the test case by this name in this particular test suite
+            </summary>
+            <param name="testCaseName"></param>
+            <param name="testSuiteId">the test suite the test case has to be in</param>
+            <returns>a valid test case id or 0 if no test case was found</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkAdaptor.updateConnectionData(Meyn.TestLink.TestLinkFixtureAttribute)">
+            <summary>
+            try to update the connection with a minimum of API calls to testlink
+            </summary>
+            <param name="newData"></param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkAdaptor.basicConnection(System.String,System.String)">
+            <summary>
+            create the basic connection and test it out
+            </summary>
+            <param name="devKey"></param>
+            <param name="url"></param>
+            <returns>true if the connection is valid</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkAdaptor.updateData(System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            update selected bits of the testlink fixture data
+            </summary>
+            <param name="newProject"></param>
+            <param name="newTestPlan"></param>
+            <param name="newTestSuite"></param>
+            <returns>true if data have been set up successfully</returns>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkAdaptor.GetTestSuiteId(System.Int32,System.String)">
+            <summary>
+            retrieve the testsuite id 
+            </summary>
+            <returns>0 or a valid test suite Id</returns>
+        </member>
+        <member name="T:Meyn.TestLink.TestLinkException">
+            <summary>
+            basic exception thrown whenever Testlink returns an error
+            </summary>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkException.#ctor">
+            <summary>
+            basic Constructor
+            </summary>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.String,System.Exception)">
+            <summary>
+            vConstructor that can take an inner exception
+            </summary>
+            <param name="msg"></param>
+            <param name="innerException"></param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.Collections.Generic.List{Meyn.TestLink.TLErrorMessage})">
+            <summary>
+            constructor that takes a list of error messages
+            </summary>
+            <param name="errs"></param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.String,System.Collections.Generic.List{Meyn.TestLink.TLErrorMessage})">
+            <summary>
+            constructor 
+            </summary>
+            <param name="msg"></param>
+            <param name="errs"></param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.String,System.Object[])">
+            <summary>
+            
+            </summary>
+            <param name="fmt"></param>
+            <param name="args"></param>
+        </member>
+        <member name="F:Meyn.TestLink.TestLinkException.errors">
+            <summary>
+            temporarily stores current errors
+            </summary>
+        </member>
         <member name="T:Meyn.TestLink.TL_Data">
             <summary>
             base class for all response classes from the TL Api
@@ -732,717 +1443,6 @@
         <member name="F:Meyn.TestLink.TestPlanTotal.Details">
             <summary>
             Dictionary with execution totals
-            </summary>
-        </member>
-        <member name="T:Meyn.TestLink.ITestLink">
-            <summary>
-            the interface mapping required for the XmlRpc api of testlink. 
-            This interface is used by the TestLink class. 
-            </summary>
-            <remarks>This class makes use of XML-RPC.NET Copyright (c) 2006 Charles Cook</remarks>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.getTestCase(System.String,System.Int32)">
-            <summary>
-            get test case specification using external or internal id. returns last version
-            </summary>
-            <param name="devKey"></param>
-            <param name="testcaseid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.getTestCase(System.String,System.Int32,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="devKey"></param>
-            <param name="testcaseid"></param>
-            <param name="version"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.deleteExecution(System.String,System.Int32)">
-            <summary>
-            delete an execution
-            </summary>
-            <param name="devKey"></param>
-            <param name="executionid"></param>
-            <returns> mixed $resultInfo 
-            				[status]	=> true/false of success
-            				[id]		  => result id or error code
-            				[message]	=> optional message for error message string</returns>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.getTestPlanPlatforms(System.String,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="devKey"></param>
-            <param name="testplanid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.getTotalsForTestPlan(System.String,System.Int32)">
-            <summary>
-            Gets the summarized results grouped by platform
-            </summary>
-            <param name="devKey"></param>
-            <param name="testplanid"></param>
-            <returns>map where every element has:
-            	 *
-            	 *	'type' => 'platform'
-            	 *	'total_tc => ZZ
-            	 *	'details' => array ( 'passed' => array( 'qty' => X)
-            	 *	                     'failed' => array( 'qty' => Y)
-            	 *	                     'blocked' => array( 'qty' => U)
-            	 *                       ....)</returns>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.sayHello">
-            <summary>
-            simple Ping.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.doesUserExist(System.String,System.String)">
-            <summary>
-            checks user exists
-            </summary>
-            <param name="devKey"></param>
-            <param name="user"></param>
-            <returns>true if everything OK, otherwise error structure</returns>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.checkDevKey(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="devKey"></param>
-            <returns>true if everything OK, otherwise error structure</returns>
-        </member>
-        <member name="M:Meyn.TestLink.ITestLink.getFullPath(System.String,System.Int32)">
-            <summary>
-            Gets full path from the given node till the top using nodes_hierarchy_table
-            </summary>
-            <param name="devKey"></param>
-            <param name="nodeID"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Meyn.TestLink.TestCaseResultStatus">
-            <summary>
-            represent the result of a test case execution
-            </summary>
-        </member>
-        <member name="T:Meyn.TestLink.ActionOnDuplicatedName">
-            <summary>
-            used for creating test cases to tell Testlink what to do if another test case is found with the same name
-            </summary>
-        </member>
-        <member name="T:Meyn.TestLink.TestLink">
-            <summary>
-            this is the proxy class to connect to TestLink.
-            It provides a list of functions that map straight into the Tstlink API as it stands at V 1.9.2
-            </summary>
-            <remarks>This class makes use of XML-RPC.NET Copyright (c) 2006 Charles Cook</remarks>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.#ctor(System.String,System.String)">
-            <summary>
-            default constructor 
-            </summary>
-            <param name="apiKey">developer key as provided by testlink</param>
-            <param name="url">url of testlink API. Something like http://localhost/testlink/lib/api/xmlrpc.php</param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.#ctor(System.String,System.String,System.Boolean)">
-            <summary>
-            constructor with URL and log flag
-            </summary>
-            <param name="apiKey">developer key as provided by testlink</param>
-            <param name="url">url of testlink API. Something like http://localhost/testlink/lib/api/xmlrpc.php </param>
-            <param name="log">enable capture of lastRequest and lastResponse for debugging</param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.handleErrorMessage(System.Object)">
-            <summary>
-             process the response object returned by the Tstlink API for error messages. 
-             if it finds one or more error messages it throws a TLINK Exception        ///  
-            </summary>
-            <param name="errorMessage">the actual message returned by testlink</param>
-            <returns>true if it found an error message that matches an errorCodes list
-            false if there were no errors</returns>returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.handleErrorMessage(System.Object,System.Int32[])">
-            <summary>
-             process the response object returned by the Tstlink API for error messages. 
-             if it finds one or more error messages it throws a TLINK Exception        ///  
-            </summary>
-            <param name="errorMessage">the actual message returned by testlink</param>
-            <returns>true if it found an error message that matches an errorCodes list
-            false if there were no errors</returns>returns>
-            <param name="exceptedErrorCodes">a list of integers that should not result in an exception to be processed</param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.handleErrorMessage(System.Object[],System.Int32[])">
-            <summary>
-             process the response object returned by the Tstlink API for error messages. 
-             if it finds one or more error messages it throws a TLINK Exception        ///  
-            </summary>
-            <param name="errorMessage">the actual message returned by testlink</param>
-            <returns>true if it found an error message that matches an errorCodes list
-            false if there were no errors</returns>returns>
-            <param name="exceptedErrorCodes">a list of integers that should not result in an exception to be processed</param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.decodeErrors(System.Object[])">
-            <summary>
-            internal. try to conver the struct to an error message. Return null if it wasn't one
-            </summary>
-            <param name="messageList"></param>
-            <returns>a TLErrorMessage or null</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.stateIsValid">
-            <summary>
-            check that the state of the interface 
-            </summary>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetBuildsForTestPlan(System.Int32)">
-            <summary>
-            get a list of all builds for a testplan
-            </summary>
-            <param name="testplanid">the id of the testplan</param>
-            <returns>a list (may be empty)</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.CreateBuild(System.Int32,System.String,System.String)">
-            <summary>
-            create a build for a testplan
-            </summary>
-            <param name="testplanid">id of the test plan</param>
-            <param name="buildname">name of the build</param>
-            <param name="buildnotes">notes</param>
-            <returns>General Result object</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetLatestBuildForTestPlan(System.Int32)">
-            <summary>
-            get the newest build for a test plan
-            </summary>
-            <param name="tplanid">id of testplan</param>
-            <returns>a build object</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.ReportTCResult(System.Int32,System.Int32,Meyn.TestLink.TestCaseResultStatus,System.Int32,System.String,System.Boolean,System.Boolean,System.String,System.Int32,System.Int32)">
-            <summary>
-            Record the outcome of a test case execution
-            </summary>
-            <param name="testcaseid">Id of test case</param>
-            <param name="testplanid">Id of test plan</param>
-            <param name="status">The result of the test (pass, fail or blocked)</param>
-            <param name="platformId">Id of the platform. Optional if platform name is given</param>
-            <param name="platformName">name of the platform. Optional if the platform id is given</param>
-            <param name="overwrite">if true, then last execution for (testcase,testplan,build,platform) will be overwritten.</param>
-            <param name="guess"> (assumed to be true) defining whether to guess optinal params or require them explicitly default is true</param>
-            <param name="notes">any notes or info to be added to the description field</param>
-            <param name="buildid">If not given, then highest build id willl be used</param>
-            <param name="bugid">Id for a bug if used in conjunction with a defect tracker</param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.UploadExecutionAttachment(System.Int32,System.String,System.String,System.Byte[],System.String,System.String)">
-            <summary>
-            Uploads an attachment for an execution. 
-            </summary>
-            <remarks>The attachment content must be Base64 encoded by the client before sending it.</remarks>
-            <param name="executionId"></param>
-            <param name="title">The title of the Attachment </param>
-            <param name="description">The description of the Attachment</param>
-            <param name="filename">The file name of the Attachment (e.g.:notes.txt)</param>
-            <param name="fileType">The file type of the Attachment (e.g.: text/plain)</param>
-            <param name="content">The content (Base64 encoded) of the Attachment</param>
-            <returns>An AttachmentRequestResponse</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetLastExecutionResult(System.Int32,System.Int32)">
-            <summary>
-            get the last execution result
-            </summary>
-            <param name="testplanid">id of the test plan</param>
-            <param name="testcaseid">id of test case</param>
-            <returns>a ExecutionResult or null</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.DeleteExecution(System.Int32)">
-            <summary>
-            delete an execution. Current status this API is not fully functioning as it is not clear how to configure testlink to allow this to happen
-            </summary>
-            <param name="executionid">the id of the test case execution</param>
-            <returns>a GeneralResult</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCase(System.Int32,System.Int32)">
-            <summary>
-            get a test case by its id
-            </summary>
-            <param name="testcaseid">Id of the test case</param>
-            <param name="versionId">(optional) the version id. If not given the latest version is returned</param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestSuite(System.Int32,System.Boolean)">
-            <summary>
-            get test cases contained in a test suite
-            </summary>
-            <param name="testSuiteid">id of the test suite</param>
-            <param name="deep">Set the deep flag to false if you only want test cases in the test suite provided and no child test cases.</param>
-            <returns>A list of Test Cases</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCaseIdsForTestSuite(System.Int32,System.Boolean)">
-            <summary>
-            get a list of testcase ids of test cases contained in a test suite
-            </summary>
-            <param name="testSuiteid">id of the test suite</param>
-            <param name="deep">Set the deep flag to false if you only want test cases in the test suite provided and no child test cases.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCaseIDByName(System.String,System.String)">
-            <summary>
-            ask for a test case by name. 
-            </summary>
-            <param name="testcasename">the name of the test case</param>
-            <param name="testsuitename">the name of the test suite</param>
-            <remarks>Searching is case sensitive.</remarks>
-            <returns>a list of test cases found</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCaseIDByName(System.String,System.Int32)">
-            <summary>
-            get a test cases by this name
-            </summary>
-            <param name="testcasename">name of the test case (case sensitive)</param>
-            <param name="testSuiteId">name of test suite</param>
-            <returns>a list containing zero to many test cases with that name that occur in the specific test suite</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCaseIDByName(System.String)">
-            <summary>
-            get a list of test case ids with this name. 
-            </summary>
-            <param name="testcasename">name of the test case (case sensitive)</param>
-            <returns>a list containing zero to many test case id objects with that name</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.CreateTestCase(System.String,System.Int32,System.String,System.Int32,System.String,System.String,System.Int32,System.Boolean,Meyn.TestLink.ActionOnDuplicatedName,System.Int32,System.Int32)">
-            <summary>
-            create a new Testcase without having to specify test steps
-            </summary>
-            <summary>
-            Create a new Test Case
-            </summary>
-            <param name="authorLogin">login id of test case author</param>
-            <param name="testsuiteid">Id of test suite</param>
-            <param name="testcasename">name of test case</param>
-            <param name="testprojectid">id of test project</param>
-            <param name="summary">summary of result</param>
-            <param name="keywords"></param>
-            <param name="order">defaultOrder = 0, otherwise location in sequence to other testcases</param>
-            <param name="checkduplicatedname">1=yes, 0=no</param>
-            <param name="actiononduplicatedname">one of block, generate_new, create_new_version</param>
-            <param name="executiontype">manual:1, automated: 2, </param>
-            <param name="importance">Importance of test case</param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.CreateTestCase(System.String,System.Int32,System.String,System.Int32,System.String,Meyn.TestLink.TestStep[],System.String,System.Int32,System.Boolean,Meyn.TestLink.ActionOnDuplicatedName,System.Int32,System.Int32)">
-            <summary>
-            Create a new Test Case
-            </summary>
-            <param name="authorLogin">login id of test case author</param>
-            <param name="testsuiteid">Id of test suite</param>
-            <param name="testcasename">name of test case</param>
-            <param name="testprojectid">id of test project</param>
-            <param name="summary">summary of result</param>
-            <param name="steps">Array of test steps</param>
-            <param name="keywords"></param>
-            <param name="order">defaultOrder = 0, otherwise location in sequence to other testcases</param>
-            <param name="checkduplicatedname">1=yes, 0=no</param>
-            <param name="actiononduplicatedname">one of block, generate_new, create_new_version</param>
-            <param name="executiontype">manual:1, automated: 2, </param>
-            <param name="importance">Importance of test case</param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.addTestCaseToTestPlan(System.Int32,System.Int32,System.String,System.Int32,System.Int32)">
-            <summary>
-            add a test case to a test plan (no way of removing one)
-            </summary>
-            <param name="testprojectid"></param>
-            <param name="testplanid"></param>
-            <param name="testcaseexternalid">the id that is displayed on the GUI</param>
-            <param name="version"></param>
-            <param name="platformid"></param>
-            <returns></returns>
-            <remarks>this testExternalid is a string and a concatenation of the 
-            test project prefix and the externalid that is reported in the test case creation.
-            </remarks>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.UploadTestCaseAttachment(System.Int32,System.String,System.String,System.Byte[],System.String,System.String)">
-            <summary>
-            upload an attachment for a test case
-            </summary>
-            <param name="testcaseid"></param>
-            <param name="filename"></param>
-            <param name="fileType"></param>
-            <param name="content"></param>
-            <param name="title"></param>
-            <param name="description"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCaseAttachments(System.Int32)">
-            <summary>
-            retrieve the attachments for a test case
-            </summary>
-            <param name="testCaseId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Int32,System.String)">
-            <summary>
-            get all test cases for a test plan .
-            </summary>
-            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
-            <param name="testplanid"></param>
-            <param name="testcaseid"></param>
-            <param name="buildid"></param>
-            <param name="keywordid"></param>
-            <param name="executed"></param>
-            <param name="assignedTo"></param>
-            <param name="executedstatus"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Int32)">
-            <summary>
-            get all test cases for a test plan .
-            </summary>
-            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
-            <param name="testplanid"></param>
-            <param name="testcaseid"></param>
-            <param name="buildid"></param>
-            <param name="keywordid"></param>
-            <param name="executed"></param>
-            <param name="assignedTo"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            get all test cases for a test plan .
-            </summary>
-            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
-            <param name="testplanid"></param>
-            <param name="testcaseid"></param>
-            <param name="buildid"></param>
-            <param name="keywordid"></param>
-            <param name="executed"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32,System.Int32)">
-            <summary>
-            get all test cases for a test plan .
-            </summary>
-            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
-            <param name="testplanid"></param>
-            <param name="testcaseid"></param>
-            <param name="buildid"></param>
-            <param name="keywordid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32,System.Int32)">
-            <summary>
-            get all test cases for a test plan .
-            </summary>
-            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
-            <param name="testplanid"></param>
-            <param name="testcaseid"></param>
-            <param name="buildid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32,System.Int32)">
-            <summary>
-            get all test cases for a test plan .
-            </summary>
-            <remarks> The same test case id can show up multiple times, once per platform.</remarks>
-            <param name="testplanid"></param>
-            <param name="testcaseid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestCasesForTestPlan(System.Int32)">
-            <summary>
-            get all test cases for a test plan
-            </summary>
-            <param name="testplanid"></param>
-            <returns>List of test cases with test plan data added</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetProjectTestPlans(System.Int32)">
-            <summary>
-            get a list of all testplans for a project
-            </summary>
-            <param name="projectid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.getTestPlanByName(System.String,System.String)">
-            <summary>
-            get a test plan for a project
-            </summary>
-            <param name="projectname">the name of the owning project</param>
-            <param name="planName"></param>
-            <returns>a TestPlan or Null</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTotalsForTestPlan(System.Int32)">
-            <summary>
-            get totals for a testplan
-            </summary>
-            <param name="testplanid"></param>
-            <remarks>If a test plan has no executions to it you will still get a list iwth a single item. That item will have zeros in its totals</remarks>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestPlanPlatforms(System.Int32)">
-             <summary>
-             get a list of all platforms for a test plan.
-            
-             </summary>
-             <remarks>Throws an exception of type Testlink Exception</remarks>
-             <param name="testplanid"></param>
-             <returns>a list of testplan platforms</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.CreateTestPlan(System.String,System.String,System.String,System.Boolean)">
-            <summary>
-            create a new Testplan 
-            </summary>
-            <param name="testplanname">the name of the plan</param>
-            <param name="testProjectName">the name of the test project that contains the test plan</param>
-            <param name="notes"></param>
-            <param name="active">whether this plan is currently active</param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetProjects">
-            <summary>
-            get a list of all projects
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetProject(System.String)">
-            <summary>
-            get a single Project
-            </summary>
-            <param name="projectname"></param>
-            <returns>a Project or Null</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.UploadTestProjectAttachment(System.Int32,System.String,System.String,System.Byte[],System.String,System.String)">
-            <summary>
-            upload an attachment to a test project
-            </summary>
-            <param name="executionId"></param>
-            <param name="filename"></param>
-            <param name="fileType"></param>
-            <param name="content"></param>
-            <param name="title"></param>
-            <param name="description"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.CreateProject(System.String,System.String,System.String)">
-            <summary>
-            create a new project
-            </summary>
-            <param name="projectname"></param>
-            <param name="testcasePrefix">prefix for test case ids</param>
-            <param name="notes"></param>
-            <returns>a general result</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestSuitesForTestPlan(System.Int32)">
-            <summary>
-            get test suites for a test plan
-            </summary>
-            <param name="testplanid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetFirstLevelTestSuitesForTestProject(System.Int32)">
-            <summary>
-            get all top level test suites for a test project
-            </summary>
-            <param name="testprojectid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.GetTestSuiteById(System.Int32)">
-            <summary>
-            get a test suite by its id
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.CreateTestSuite(System.Int32,System.String,System.String,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            create a new test suite
-            </summary>
-            <param name="testprojectid">id of test project</param>
-            <param name="testsuitename">Name of this test suite</param>
-            <param name="details"></param>
-            <param name="parentId">parent test suite id. Optional</param>
-            <param name="order">display order with sibling test suites. Optional</param>
-            <param name="checkduplicatedname">if true, throw an error of a duplicate name exists. Optional, default=true</param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.UploadTestSuiteAttachment(System.Int32,System.String,System.String,System.Byte[],System.String,System.String)">
-            <summary>
-            upload an attachment for a test case
-            </summary>
-            <param name="testsuiteid"></param>
-            <param name="filename"></param>
-            <param name="fileType"></param>
-            <param name="content"></param>
-            <param name="title"></param>
-            <param name="description"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.SayHello">
-            <summary>
-            basic Ping
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.about">
-            <summary>
-            Gets info about the API
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.checkDevKey(System.String)">
-            <summary>
-            check if Developer Key exists
-            </summary>
-            <param name="devkey"></param>
-            <returns>true if key exists</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLink.DoesUserExist(System.String)">
-            <summary>
-            check for user id to see whether it exists
-            </summary>
-            <param name="username"></param>
-            <returns></returns>
-        </member>
-        <member name="P:Meyn.TestLink.TestLink.LastRequest">
-            <summary>
-            last xmlrpc request sent to testlink. only works if constructor was called with argument log set to true
-            </summary>
-        </member>
-        <member name="P:Meyn.TestLink.TestLink.LastResponse">
-            <summary>
-            debug last response reseved from testlink xmlrpc call. Only works if constructor was called with argument log set to true
-            </summary>
-        </member>
-        <member name="T:Meyn.TestLink.TestLinkException">
-            <summary>
-            basic exception thrown whenever Testlink returns an error
-            </summary>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkException.#ctor">
-            <summary>
-            basic Constructor
-            </summary>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.String,System.Exception)">
-            <summary>
-            vConstructor that can take an inner exception
-            </summary>
-            <param name="msg"></param>
-            <param name="innerException"></param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.Collections.Generic.List{Meyn.TestLink.TLErrorMessage})">
-            <summary>
-            constructor that takes a list of error messages
-            </summary>
-            <param name="errs"></param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.String,System.Collections.Generic.List{Meyn.TestLink.TLErrorMessage})">
-            <summary>
-            constructor 
-            </summary>
-            <param name="msg"></param>
-            <param name="errs"></param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="msg"></param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkException.#ctor(System.String,System.Object[])">
-            <summary>
-            
-            </summary>
-            <param name="fmt"></param>
-            <param name="args"></param>
-        </member>
-        <member name="F:Meyn.TestLink.TestLinkException.errors">
-            <summary>
-            temporarily stores current errors
-            </summary>
-        </member>
-        <member name="T:Meyn.TestLink.TestLinkAdaptor">
-            <summary>
-            encapsulates the basic comms to the TestLink API 
-            for the purpose of recording test results based upon the TestLinkFixtureAttribute 
-            information.
-            </summary>
-            <remarks>This class is used by test exporters for automated testing frameworks such as Gallio or NUnit</remarks>
-        </member>
-        <member name="F:Meyn.TestLink.TestLinkAdaptor.basicConnectionValid">
-            <summary>
-            can we talk to testlink
-            </summary>
-        </member>
-        <member name="F:Meyn.TestLink.TestLinkAdaptor.projectDataValid">
-            <summary>
-            do we have project plan, project id and test suite correct?
-            </summary>
-        </member>
-        <member name="F:Meyn.TestLink.TestLinkAdaptor.proxy">
-            <summary>
-            the proxy to the current server
-            </summary>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkAdaptor.RecordTheResult(System.Int32,Meyn.TestLink.TestCaseResultStatus,System.String)">
-            <summary>
-            record a result with testlink;
-            </summary>
-            <param name="testCaseId"></param>
-            <param name="status"></param>
-            <param name="notes"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkAdaptor.GetTestCaseId(System.String)">
-            <summary>
-            get a test case id. If the test case does not exist then create one
-            </summary>
-            <param name="testName"></param>       
-            <returns>a valid test case id or 0 in case of failure</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkAdaptor.getTestCaseByName(System.String,System.Int32)">
-            <summary>
-            get the test case by this name in this particular test suite
-            </summary>
-            <param name="testCaseName"></param>
-            <param name="testSuiteId">the test suite the test case has to be in</param>
-            <returns>a valid test case id or 0 if no test case was found</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkAdaptor.updateConnectionData(Meyn.TestLink.TestLinkFixtureAttribute)">
-            <summary>
-            try to update the connection with a minimum of API calls to testlink
-            </summary>
-            <param name="newData"></param>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkAdaptor.basicConnection(System.String,System.String)">
-            <summary>
-            create the basic connection and test it out
-            </summary>
-            <param name="devKey"></param>
-            <param name="url"></param>
-            <returns>true if the connection is valid</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkAdaptor.updateData(System.Boolean,System.Boolean,System.Boolean)">
-            <summary>
-            update selected bits of the testlink fixture data
-            </summary>
-            <param name="newProject"></param>
-            <param name="newTestPlan"></param>
-            <param name="newTestSuite"></param>
-            <returns>true if data have been set up successfully</returns>
-        </member>
-        <member name="M:Meyn.TestLink.TestLinkAdaptor.GetTestSuiteId(System.Int32,System.String)">
-            <summary>
-            retrieve the testsuite id 
-            </summary>
-            <returns>0 or a valid test suite Id</returns>
-        </member>
-        <member name="P:Meyn.TestLink.TestLinkAdaptor.ConnectionValid">
-            <summary>
-            can we record test results
-            </summary>
-        </member>
-        <member name="P:Meyn.TestLink.TestLinkAdaptor.ConnectionData">
-            <summary>
-            sets up connection and retrieves basic data
             </summary>
         </member>
     </members>

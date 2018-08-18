@@ -102,9 +102,15 @@ namespace activeWindow
 					Xml.XmlNodeList LibraryList = PluginLibrary.SelectNodes("plugins/active[@type='" + PluginClass + "']/plugin");
 					foreach (Xml.XmlElement LibraryNode in LibraryList)
 					{
-						// Add each class to our results
-                        System.Reflection.Assembly PluginAssembly = System.Reflection.Assembly.LoadFile(Path.GetFullPath(LibraryNode.InnerText));
-						Result.Add(PluginAssembly.GetType(LibraryNode.GetAttribute("fullname"), false, true));
+                        // Add each class to our results
+                        try
+                        {
+                            System.Reflection.Assembly PluginAssembly = System.Reflection.Assembly.LoadFile(Path.GetFullPath(LibraryNode.InnerText));
+                            Result.Add(PluginAssembly.GetType(LibraryNode.GetAttribute("fullname"), false, true));
+                        }
+                        catch (Exception e) {
+
+                        }
 					}
 				}
 			}

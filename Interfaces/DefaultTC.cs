@@ -7,7 +7,7 @@ using System.Data;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Configuration;
-using Excel = Microsoft.Office.Interop.Excel;
+using Excel= Microsoft.Office.Interop.Excel;
 
 namespace activeWindow
 {
